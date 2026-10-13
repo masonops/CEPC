@@ -1,0 +1,54 @@
+# ===========================================================================
+#  CEPC · Sitio público — Configuración de Apache (SparkedHost)
+# ===========================================================================
+
+Options -Indexes
+DirectoryIndex index.php
+
+# --- Archivos internos -----------------------------------------------------
+<FilesMatch "^(config\.php|\.env.*|.*\.md)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+RedirectMatch 404 /\.git
+RedirectMatch 404 ^/includes/
+
+# --- Cabeceras de seguridad ------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# --- Tipos ----------------------------------------------------------------
+AddType font/woff2 .woff2
+AddType text/calendar .ics
+
+# --- Caché de archivos estáticos (llevan ?v= con la fecha del archivo) ----
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css               "access plus 30 days"
+  ExpiresByType application/javascript "access plus 30 days"
+  ExpiresByType image/png              "access plus 30 days"
+  ExpiresByType image/jpeg             "access plus 30 days"
+  ExpiresByType image/svg+xml          "access plus 30 days"
+  ExpiresByType font/woff2             "access plus 1 year"
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript image/svg+xml text/calendar
+</IfModule>
+
+# --- Forzar HTTPS (descomenta cuando el dominio tenga certificado) ---------
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{HTTPS} off
+#   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
