@@ -39,10 +39,10 @@ function copiar_carpeta(string $origen, string $destino): void
 }
 
 /** Ejecuta una página PHP y devuelve el HTML que imprime. */
-function construir_pagina(string $archivo): string
+function construir_pagina(string $archivo, array $parametros = []): string
 {
     // Cada página se arma en su propio ámbito, como si fuera una visita.
-    $_GET = [];
+    $_GET = $parametros;
     ob_start();
     (static function (string $archivo): void {
         require $archivo;
@@ -56,7 +56,7 @@ require $raiz . '/includes/arranque.php';
 copiar_carpeta($raiz . '/assets', $salida . '/assets');
 file_put_contents($salida . '/.nojekyll', '');
 
-$paginas = ['index', 'calendario', 'mapa', 'calculadora', 'transparencia', 'buscar'];
+$paginas = ['index', 'articulos', 'calendario', 'mapa', 'calculadora', 'transparencia', 'buscar'];
 foreach ($paginas as $nombre) {
     $archivo = $raiz . '/' . $nombre . '.php';
     if (!is_file($archivo)) {
@@ -70,6 +70,14 @@ foreach ($paginas as $nombre) {
     file_put_contents($salida . '/' . $nombre . '.html', $html);
     echo "  $nombre.html\n";
 }
+
+// Una página por cada publicación (articulo.php?id=N → articulo-N.html).
+foreach (datos_articulos(500) as $articulo) {
+    $id = (int) $articulo['id'];
+    file_put_contents($salida . '/articulo-' . $id . '.html', construir_pagina($raiz . '/articulo.php', ['id' => (string) $id]));
+    $paginas[] = 'articulo-' . $id;
+}
+echo '  ' . count(datos_articulos(500)) . " publicaciones\n";
 
 // Un .ics por cada fecha que aparece en la página.
 require_once $raiz . '/includes/ics.php';

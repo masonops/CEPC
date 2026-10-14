@@ -6,12 +6,15 @@
  *
  * Cómo agregar una sala: búscala en su edificio y piso, y suma una fila:
  *     ['codigo' => 'B12', 'nombre' => 'Sala B12', 'tipo' => 'sala', 'capacidad' => 90],
- * Tipos de sala: sala · auditorio · laboratorio · oficina · servicio.
+ * Tipos de sala: sala · auditorio · laboratorio · oficina · servicio · social.
  *
  * Campos opcionales:
- *   'corto'      nombre corto para la etiqueta sobre el mapa
- *   'etiqueta'   [x, y] si la etiqueta cae mal en el centro de la forma
+ *   'corto'      nombre corto para la etiqueta del mapa; "\n" lo parte en
+ *                dos líneas. La etiqueta se ubica sola dentro del edificio y
+ *                se gira o se esconde si no cabe.
  *   'servicios'  lista simple: baños, cajero, ascensor…
+ *   'zonas'      partes interiores con nombre (la forma está en
+ *                geometria.php → 'zonas'), por ejemplo la Biblioteca.
  *
  * IMPORTANTE: los PISOS Y SALAS de abajo son DE EJEMPLO (el plano de
  * referencia no trae subterráneos ni pisos altos). Mientras
@@ -39,9 +42,13 @@ return [
         'nombre'      => 'Edificio Escuela',
         'corto'       => 'Escuela',
         'campus'      => '850',
-        'etiqueta'    => [296, 410],
-        'descripcion' => 'El edificio principal frente a Beauchef 850. Aquí está el Auditorio Gorbea y las salas de clases de Plan Común.',
-        'servicios'   => ['Baños', 'Auditorio Gorbea'],
+        'descripcion' => 'El edificio frente a Beauchef 850. Un pasillo central lo cruza desde la entrada hasta la Sobria y lo divide en dos alas: hacia el norte la Biblioteca y hacia el sur el Hall Sur. A cada lado del pasillo hay escaleras al segundo piso, y junto a la del lado norte, una bajada a la Cafeta.',
+        'servicios'   => ['Baños', 'Auditorio Gorbea', 'Escaleras al 2.º piso', 'Bajada a la Cafeta'],
+        'zonas' => [
+            'biblioteca' => ['nombre' => 'Biblioteca', 'descripcion' => 'Biblioteca y salas de estudio, en el extremo norte.'],
+            'hall-sur'   => ['nombre' => 'Hall Sur', 'descripcion' => 'Extremo sur del edificio.'],
+            'pasillo'    => ['nombre' => 'Pasillo central', 'descripcion' => 'Va de la entrada de Beauchef 850 a la Sobria.'],
+        ],
         'pisos' => [
             ['nivel' => 1, 'salas' => [
                 sala('GORBEA', 'Auditorio Gorbea', 'auditorio', 300),
@@ -61,29 +68,16 @@ return [
         ],
     ],
 
-    'biblioteca' => [
-        'nombre'      => 'Biblioteca Central',
-        'corto'       => 'Biblioteca',
+    'sobria' => [
+        'nombre'      => 'Sobria y Cafeta',
+        'corto'       => 'Sobria',
         'campus'      => '850',
-        'descripcion' => 'Biblioteca y salas de estudio, en el extremo norte del Edificio Escuela.',
-        'servicios'   => ['Salas de estudio'],
-        'pisos'       => [['nivel' => 1, 'salas' => []], ['nivel' => 2, 'salas' => []]],
-    ],
-
-    'hall-sur' => [
-        'nombre'      => 'Hall Sur',
-        'campus'      => '850',
-        'descripcion' => 'Extremo sur del Edificio Escuela.',
-        'pisos'       => [['nivel' => 1, 'salas' => []]],
-    ],
-
-    'cafeteria' => [
-        'nombre'      => 'Cafetería',
-        'corto'       => 'Café',
-        'campus'      => '850',
-        'etiqueta'    => [386, 412],
-        'descripcion' => 'Cafetería junto al Edificio Escuela, frente a la cancha.',
-        'pisos'       => [],
+        'descripcion' => 'Espacios para juntarse. En el primer piso, la Sobria; abajo, en el piso −1, la Cafeta. A la Cafeta se baja por escaleras en ambos extremos y desde el pasillo central de la Escuela.',
+        'servicios'   => ['Bajadas a la Cafeta por ambos extremos'],
+        'pisos' => [
+            ['nivel' => 1, 'salas' => [sala('SOBRIA', 'Sobria', 'social')]],
+            ['nivel' => -1, 'salas' => [sala('CAFETA', 'Cafeta', 'social')]],
+        ],
     ],
 
     'fisica' => [
@@ -99,20 +93,19 @@ return [
         ],
     ],
 
-    'minas' => [
-        'nombre'      => 'Ingeniería de Minas y Química',
-        'corto'       => 'Minas',
+    'quimica' => [
+        'nombre'      => 'Química',
         'campus'      => '850',
-        'descripcion' => 'Departamentos de Ingeniería de Minas y de Química, hacia Tupper.',
+        'descripcion' => 'Edificio de Química, hacia Tupper.',
         'servicios'   => ['Baños'],
         'pisos'       => [['nivel' => 1, 'salas' => []], ['nivel' => 2, 'salas' => []], ['nivel' => 3, 'salas' => []]],
     ],
 
-    'torre-central' => [
-        'nombre'      => 'Torre Central',
-        'corto'       => 'Torre',
+    'justicia-espada' => [
+        'nombre'      => 'Justicia Espada',
+        'corto'       => "Justicia\nEspada",
         'campus'      => '850',
-        'descripcion' => 'Torre en el centro del campus, rodeada por los patios.',
+        'descripcion' => 'Edificio en el centro del campus, rodeado por los patios.',
         'servicios'   => ['Cajero automático', 'Baños'],
         'pisos' => [
             ['nivel' => 1, 'salas' => [sala('CONF', 'Sala de conferencias', 'auditorio', 80)]],
@@ -156,7 +149,6 @@ return [
         'nombre'      => 'IDIEM',
         'campus'      => '850',
         'descripcion' => 'Centro de Investigación, Desarrollo e Innovación de Estructuras y Materiales.',
-        'etiqueta'    => [925, 470],
         'pisos'       => [['nivel' => 1, 'salas' => []], ['nivel' => 2, 'salas' => []]],
     ],
 
@@ -169,7 +161,7 @@ return [
 
     /* --- Beauchef 851 ---------------------------------------------------- */
 
-    'b851-oriente' => [
+    'industrial' => [
         'nombre'      => 'Beauchef 851 · Ingeniería Industrial',
         'corto'       => 'Industrial',
         'campus'      => '851',
@@ -183,22 +175,22 @@ return [
         ],
     ],
 
-    'b851-norte' => [
-        'nombre'      => 'Beauchef 851 · Matemática y Computación',
-        'corto'       => 'Matemática',
+    'edificio-norte' => [
+        'nombre'      => 'Edificio Norte',
+        'corto'       => 'Edificio Norte',
         'campus'      => '851',
-        'descripcion' => 'Departamentos de Ingeniería Matemática y Ciencias de la Computación, y el CMM.',
+        'descripcion' => 'Beauchef 851. Departamentos de Ingeniería Matemática y Ciencias de la Computación, y el CMM.',
         'pisos' => [
             ['nivel' => 1, 'salas' => [sala('LAB1', 'Laboratorio de computación 1', 'laboratorio', 40), sala('LAB3', 'Lab 3', 'laboratorio', 40)]],
             ['nivel' => 2, 'salas' => []],
         ],
     ],
 
-    'b851-poniente' => [
-        'nombre'      => 'Beauchef 851 · Mecánica, Química y Biotecnología',
-        'corto'       => 'Mecánica',
+    'edificio-oriente' => [
+        'nombre'      => 'Edificio Oriente',
+        'corto'       => 'Edificio Oriente',
         'campus'      => '851',
-        'descripcion' => 'Departamentos de Ingeniería Mecánica y de Ingeniería Química, Biotecnología y Materiales.',
+        'descripcion' => 'Beauchef 851. Departamentos de Ingeniería Mecánica y de Ingeniería Química, Biotecnología y Materiales.',
         'pisos'       => [['nivel' => 1, 'salas' => []], ['nivel' => 2, 'salas' => []]],
     ],
 
@@ -216,7 +208,15 @@ return [
         'nombre'      => 'Cancha',
         'campus'      => '850',
         'tipo'        => 'espacio',
-        'descripcion' => 'Cancha en el patio central, entre la cafetería y la Torre Central.',
+        'descripcion' => 'Cancha en el patio central, entre la Sobria y Justicia Espada.',
+        'pisos'       => [],
+    ],
+
+    'ebria' => [
+        'nombre'      => 'Ebria',
+        'campus'      => '850',
+        'tipo'        => 'espacio',
+        'descripcion' => 'Espacio para juntarse, entre la cancha y Justicia Espada.',
         'pisos'       => [],
     ],
 ];

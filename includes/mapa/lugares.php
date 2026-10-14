@@ -7,7 +7,7 @@
  *   'nombre'     cómo se llama
  *   'tipo'       almuerzo · cafeteria · snack · minimarket
  *   'x', 'y'     posición en el mapa (mapa.php?coordenadas=1 muestra la cuadrícula)
- *   'etiquetas'  cualquiera de: vegano · vegetariano · junaeb · barato
+ *   'etiquetas'  cualquiera de: vegano · vegetariano · junaeb · barato · casera
  *   'horario'    por día: 'HH:MM-HH:MM', o null si cierra. Usa horario() para
  *                no repetir: horario('08:30-17:00', sabado: '09:00-14:00')
  *   'nota'       texto libre (precio del menú, dónde queda exactamente…)
@@ -40,14 +40,22 @@ return [
         'nota'      => 'Horario y menú por confirmar.',
         'edificio'  => 'casino',
     ],
-    'cafeteria' => [
-        'nombre'    => 'Cafetería del patio',
+    'cafeta' => [
+        'nombre'    => 'Cafeta',
         'tipo'      => 'cafeteria',
-        'x'         => 386, 'y' => 440,
+        'x'         => 386, 'y' => 444,
         'etiquetas' => [],
         'horario'   => null,
-        'nota'      => 'Horario por confirmar.',
-        'edificio'  => 'cafeteria',
+        'nota'      => 'En el piso −1, bajo la Sobria. Horario por confirmar.',
+        'edificio'  => 'sobria',
+    ],
+    'tios-almuerzo' => [
+        'nombre'    => 'Tíos del almuerzo',
+        'tipo'      => 'almuerzo',
+        'x'         => 252, 'y' => 486,
+        'etiquetas' => ['casera'],
+        'horario'   => null,
+        'nota'      => 'Comida casera en la vereda, frente a la Escuela. Horario por confirmar.',
     ],
     'almuerzos' => [
         'nombre'    => 'Almuerzos caseros',

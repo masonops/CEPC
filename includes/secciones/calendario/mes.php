@@ -10,7 +10,7 @@
  * Grupos (colores validados para daltonismo, ver calendario.css):
  *   evaluacion  solemnes, controles, exámenes y entregas
  *   actividad   actividades y sunsets
- *   comunidad   asambleas, marchas y paros
+ *   comunidad   asambleas, elecciones, marchas y paros
  */
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ declare(strict_types=1);
 $gruposCalendario = [
     'evaluacion' => 'Evaluaciones',
     'actividad'  => 'Actividades',
-    'comunidad'  => 'Asambleas y movilizaciones',
+    'comunidad'  => 'Asambleas y elecciones',
 ];
 
 $datosCalendario = [

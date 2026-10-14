@@ -18,13 +18,20 @@ $directiva = datos_directiva();
 
     <div class="somos__texto">
       <h2 id="directiva-titulo" class="oculto">Quiénes somos</h2>
-      <p class="declaracion revelar">
-        <strong>Somos el Centro de Estudiantes de Plan Común.</strong>
-        Representamos a primer y segundo año ante la Escuela y la Facultad, organizamos actividades y te acompañamos cuando algo no anda bien.
-      </p>
+      <?php if (es_lista()): ?>
+        <p class="declaracion revelar">
+          <strong><?= esc(sitio('lista')['lema']) ?>.</strong>
+          Somos <span translate="no"><?= esc(sitio('lista')['nombre']) ?></span>, una lista de estudiantes de primer y segundo año que se presenta al Centro de Estudiantes de Plan Común. Queremos un CEPC cercano, ordenado y transparente.
+        </p>
+      <?php else: ?>
+        <p class="declaracion revelar">
+          <strong>Somos el Centro de Estudiantes de Plan Común.</strong>
+          Representamos a primer y segundo año ante la Escuela y la Facultad, organizamos actividades y te acompañamos cuando algo no anda bien.
+        </p>
+      <?php endif; ?>
 
       <?php if ($directiva !== []): ?>
-        <h3 class="somos__subtitulo revelar">Directiva <?= esc(date('Y')) ?></h3>
+        <h3 class="somos__subtitulo revelar"><?= es_lista() ? 'Nuestras candidaturas' : 'Directiva ' . esc(date('Y')) ?></h3>
         <ul class="personas">
           <?php foreach ($directiva as $i => $persona): ?>
             <li class="persona revelar" style="--i: <?= (int) $i ?>">

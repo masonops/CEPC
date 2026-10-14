@@ -21,7 +21,7 @@ $eventosCalendario = datos_eventos_rango(
     date('Y-m-t', strtotime('+8 months'))
 );
 
-$titulo       = 'Calendario · ' . sitio('sigla');
+$titulo       = 'Calendario · ' . marca();
 $descripcion  = 'Solemnes, controles, entregas, actividades y asambleas de Plan Común.';
 $paginaActual = 'calendario';
 $estilos      = ['pagina', 'calendario'];

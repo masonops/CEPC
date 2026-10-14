@@ -24,14 +24,16 @@ $secciones = [
     'documentos'  => 'Documentos',
 ];
 
-$titulo       = 'Transparencia · ' . sitio('sigla');
+$titulo       = 'Transparencia · ' . marca();
 $descripcion  = 'Ingresos y gastos, proyectos, asambleas, votaciones y estatutos del CEPC.';
 $paginaActual = 'transparencia';
 $estilos      = ['pagina', 'transparencia'];
 $scripts      = ['transparencia'];
 $cabecera     = [
     'titulo' => 'Transparencia',
-    'bajada' => 'Cada peso que entra y sale, lo que se decide en asamblea y las reglas con las que funcionamos.',
+    'bajada' => es_lista()
+        ? 'Nuestra propuesta: si somos CEPC, cada peso que entre y salga, lo que se decida en asamblea y las reglas del centro estarán aquí, a la vista de todos.'
+        : 'Cada peso que entra y sale, lo que se decide en asamblea y las reglas con las que funcionamos.',
     'icono'  => 'scales',
 ];
 
@@ -40,6 +42,12 @@ require __DIR__ . '/includes/partes/encabezado.php';
 
 <main id="contenido">
   <?php require __DIR__ . '/includes/partes/cabecera-pagina.php'; ?>
+
+  <?php if (es_lista()): ?>
+    <div class="contenedor transparencia-propuesta">
+      <p class="aviso-ejemplo"><?= icono('info') ?>Esta página muestra cómo funcionará la rendición de cuentas si somos elegidos. Mientras tanto, los montos, asambleas y votaciones son de ejemplo.</p>
+    </div>
+  <?php endif; ?>
 
   <nav class="indice-pagina" aria-label="En esta página">
     <div class="contenedor">

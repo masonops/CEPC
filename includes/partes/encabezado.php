@@ -7,7 +7,7 @@
  * Cada página define antes de incluir este archivo:
  *   $titulo        título de la pestaña
  *   $descripcion   resumen para buscadores
- *   $paginaActual  'inicio', 'calendario', 'mapa', 'calculadora', 'transparencia' o 'buscar'
+ *   $paginaActual  'inicio', 'articulos', 'calendario', 'mapa', 'calculadora', 'transparencia' o 'buscar'
  *   $estilos       hojas propias de la página, relativas a assets/css/ y sin .css
  *   $scripts       scripts propios de la página, relativos a assets/js/ y sin .js
  */
@@ -20,6 +20,8 @@ $scripts      ??= [];
 
 /** Enlaces de la barra. Para agregar una página, súmala aquí. */
 $navegacion = [
+    'inicio'        => 'Inicio',
+    'articulos'     => es_lista() ? 'Propuestas' : 'Publicaciones',
     'calendario'    => 'Calendario',
     'mapa'          => 'Mapa',
     'calculadora'   => 'Calculadora',
@@ -38,10 +40,10 @@ $navegacion = [
 <meta property="og:type" content="website">
 <meta property="og:title" content="<?= esc($titulo) ?>">
 <meta property="og:description" content="<?= esc($descripcion) ?>">
-<meta property="og:image" content="<?= esc(recurso('assets/img/logo-cepc.png')) ?>">
+<meta property="og:image" content="<?= esc(recurso(es_lista() ? 'assets/img/lista-compartir.png' : 'assets/img/logo-cepc.png')) ?>">
 <meta property="og:locale" content="es_CL">
-<link rel="icon" type="image/png" href="<?= esc(recurso('assets/img/favicon.png')) ?>">
-<link rel="apple-touch-icon" href="<?= esc(recurso('assets/img/apple-touch-icon.png')) ?>">
+<link rel="icon" type="image/png" href="<?= esc(recurso(es_lista() ? 'assets/img/lista-favicon.png' : 'assets/img/favicon.png')) ?>">
+<link rel="apple-touch-icon" href="<?= esc(recurso(es_lista() ? 'assets/img/lista-icono.png' : 'assets/img/apple-touch-icon.png')) ?>">
 <script>
   /* Tema: claro por defecto; se recuerda el oscuro si la persona lo eligió.
      Va aquí arriba para que la página no parpadee al cargar. */
@@ -79,13 +81,21 @@ $navegacion = [
 
 <header class="barra<?= $paginaActual === 'inicio' ? '' : ' barra--solida barra--fija' ?>" data-barra>
   <div class="contenedor barra__interior">
-    <a class="marca" href="<?= esc(pagina('inicio')) ?>" aria-label="<?= esc(sitio('sigla') . ', inicio') ?>">
-      <img class="marca__logo solo-claro" src="<?= esc(recurso('assets/img/marca-cepc.png')) ?>" alt="" width="26" height="30">
-      <img class="marca__logo solo-oscuro" src="<?= esc(recurso('assets/img/marca-cepc-oscuro.png')) ?>" alt="" width="26" height="30">
-      <span class="marca__texto" translate="no">
-        <strong><?= esc(sitio('sigla')) ?></strong>
-        <span>Plan Común FCFM</span>
-      </span>
+    <a class="marca" href="<?= esc(pagina('inicio')) ?>" aria-label="<?= esc(marca() . ', inicio') ?>">
+      <?php if (es_lista()): ?>
+        <span class="marca__sello" translate="no" aria-hidden="true"><?= esc(sitio('lista')['nombre']) ?></span>
+        <span class="marca__texto">
+          <strong translate="no"><?= esc(sitio('lista')['nombre']) ?></strong>
+          <span>Lista al CEPC · Plan Común</span>
+        </span>
+      <?php else: ?>
+        <img class="marca__logo solo-claro" src="<?= esc(recurso('assets/img/marca-cepc.png')) ?>" alt="" width="26" height="30">
+        <img class="marca__logo solo-oscuro" src="<?= esc(recurso('assets/img/marca-cepc-oscuro.png')) ?>" alt="" width="26" height="30">
+        <span class="marca__texto" translate="no">
+          <strong><?= esc(sitio('sigla')) ?></strong>
+          <span>Plan Común FCFM</span>
+        </span>
+      <?php endif; ?>
     </a>
 
     <nav class="nav" id="nav-principal" aria-label="Páginas">

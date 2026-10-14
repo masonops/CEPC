@@ -13,7 +13,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/arranque.php';
 
 $secciones = [
-    'portada',        // Banner con el destacado
+    'portada',        // Banner (en modo lista: el lema y la próxima fecha importante)
+    'articulos',      // Propuestas y artículos (se publican desde el panel)
     'agenda',         // Próximas fechas
     'ayuda',          // Lo que necesitas (apuntes, tutorías, bienestar, mapa, calculadora…)
     'novedades',      // Lo último en Instagram
@@ -22,8 +23,12 @@ $secciones = [
     'preguntas',      // Preguntas frecuentes
 ];
 
-$titulo       = sitio('sigla') . ' · ' . sitio('nombre');
-$descripcion  = 'Fechas, apuntes, tutorías y apoyo para Plan Común de la FCFM, Universidad de Chile.';
+$titulo       = es_lista()
+    ? marca() . ' · ' . sitio('lista')['lema'] . ' · Lista al CEPC'
+    : sitio('sigla') . ' · ' . sitio('nombre');
+$descripcion  = es_lista()
+    ? sitio('lista')['descripcion'] . ' de la FCFM. Nuestras propuestas, fechas importantes, mapa del campus y más.'
+    : 'Fechas, apuntes, tutorías y apoyo para Plan Común de la FCFM, Universidad de Chile.';
 $paginaActual = 'inicio';
 $estilos      = array_merge(
     ['mapa-dibujo'],  // la miniatura del mapa en «Lo que necesitas»

@@ -18,6 +18,18 @@ function sitio(string $clave, mixed $porDefecto = null): mixed
     return $GLOBALS['SITIO'][$clave] ?? $porDefecto;
 }
 
+/** ¿El sitio está en modo campaña de la lista? (config.php → 'modo') */
+function es_lista(): bool
+{
+    return sitio('modo', 'lista') === 'lista';
+}
+
+/** Nombre con que se firma el sitio: la lista (∀∃!) o el CEPC. */
+function marca(): string
+{
+    return es_lista() ? (string) sitio('lista')['nombre'] : (string) sitio('sigla');
+}
+
 /** URL de un archivo estático con versión para que el navegador no use uno viejo. */
 function recurso(string $ruta): string
 {
@@ -54,6 +66,12 @@ function pagina(string $nombre, string $ancla = ''): string
         ? (sitio('estatico', false) ? 'index.html' : './')
         : $nombre . (sitio('estatico', false) ? '.html' : '.php');
     return $archivo . ($ancla !== '' ? '#' . $ancla : '');
+}
+
+/** Enlace a una publicación: articulo.php?id=N o articulo-N.html en la versión estática. */
+function enlace_articulo(int $id): string
+{
+    return sitio('estatico', false) ? 'articulo-' . $id . '.html' : 'articulo.php?id=' . $id;
 }
 
 /**

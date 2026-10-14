@@ -50,6 +50,10 @@ function demo_pdo(): PDO
         CREATE TABLE opciones_votacion (
             id INTEGER PRIMARY KEY AUTOINCREMENT, votacion_id INTEGER, texto TEXT, votos INTEGER, orden INTEGER
         );
+        CREATE TABLE articulos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, titulo TEXT, resumen TEXT, cuerpo TEXT, categoria TEXT,
+            imagen TEXT, autor TEXT, destacado INTEGER, estado TEXT, publicado_en TEXT
+        );
         CREATE TABLE usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, cargo TEXT, avatar TEXT,
             color TEXT, orden INTEGER, activo INTEGER
@@ -89,6 +93,8 @@ function demo_pdo(): PDO
         ['Sunset de bienvenida al segundo semestre', 'sunset', 11, '17:00', 'Patio Beauchef 851', null],
         ['Día de marcha por el financiamiento de la educación', 'marcha', 13, '11:00', 'Plaza Baquedano', null],
         ['Feria de organizaciones estudiantiles', 'actividad', 16, '12:00', 'Patio Beauchef 851', null],
+        ['Debate de listas al CEPC', 'actividad', 6, '13:00', 'Auditorio Gorbea', null],
+        ['Elecciones CEPC', 'eleccion', 10, '09:00', 'Hall Sur', null],
     ];
     $insertar($pdo, 'eventos', ['titulo', 'tipo', 'fecha', 'hora_inicio', 'lugar', 'ramo'], array_map(
         static fn(array $e): array => [$e[0], $e[1], $dia($e[2]), $e[3], $e[4], $e[5]],
@@ -97,10 +103,10 @@ function demo_pdo(): PDO
 
     // [título, hace cuántos días, texto]
     $publicaciones = [
+        ['Conoce a ∀∃!', 3, 'Quiénes somos, por qué nos presentamos y qué nos gustaría lograr en el CEPC.'],
         ['Calendario de solemnes del semestre', 6, 'Carrusel con todas las fechas de solemnes de Plan Común. Guárdalo para tenerlo a mano.'],
-        ['Cómo pedir un reembolso al CEPC', 13, 'Explicativo en 4 láminas con el paso a paso.'],
         ['Red de apoyo psicológico de la facultad', 20, 'Dónde pedir hora y qué esperar de la primera sesión.'],
-        ['Banco de apuntes: ya está en línea', 27, 'Link en la bio, ordenado por ramo.'],
+        ['Elecciones CEPC: lo que tienes que saber', 9, 'Cuándo se vota, dónde y qué llevar. Link en la bio.'],
     ];
     $insertar($pdo, 'publicaciones', ['titulo', 'plataforma', 'fecha_publicacion', 'estado', 'copy_texto'], array_map(
         static fn(array $p): array => [$p[0], 'instagram', $dia(-$p[1]), 'publicado', $p[2]],
@@ -194,6 +200,44 @@ function demo_pdo(): PDO
             array_keys($v[4])
         ));
     }
+
+    // Publicaciones: [título, resumen, cuerpo, categoría, hace cuántos días, destacada]
+    $articulos = [
+        [
+            'Un calendario único de evaluaciones',
+            'Todas las solemnes, controles y entregas de Plan Común en un solo lugar, con aviso cuando dos evaluaciones chocan.',
+            "Cada semestre las fechas de evaluación llegan por muchos lados: U-Cursos, correos, historias de Instagram. Queremos juntarlas.\n\n## Qué proponemos\n- Un calendario público con todas las evaluaciones de Plan Común.\n- Aviso automático cuando dos solemnes caen el mismo día.\n- Llevar los topes a la Escuela antes de que ocurran, no después.\n\nEl calendario de esta página es un primer paso: ya puedes agregar cualquier fecha a tu teléfono.",
+            'propuesta', 2, 1,
+        ],
+        [
+            'Elecciones CEPC: fechas y cómo votar',
+            'Dónde y cuándo se vota, y qué llevar. Las fechas oficiales también están en el calendario.',
+            "Las elecciones del Centro de Estudiantes de Plan Común son abiertas a todo primer y segundo año.\n\n## Antes de votar\n- Revisa la fecha y el lugar en el calendario de esta página.\n- Lleva tu credencial universitaria.\n- Ven al debate de listas para conocer todas las propuestas.",
+            'fechas', 4, 0,
+        ],
+        [
+            'Cuentas claras desde el día uno',
+            'Si somos CEPC, cada peso que entre y salga quedará publicado, con su boleta y su proyecto.',
+            "La confianza se construye mostrando las cuentas, no pidiéndola.\n\n## Qué proponemos\n- Publicar cada ingreso y gasto en la página de transparencia.\n- Presupuesto por proyecto, con cuánto va gastado.\n- Actas de cada asamblea a la semana siguiente.",
+            'propuesta', 7, 0,
+        ],
+        [
+            'Un mapa del campus hecho por estudiantes',
+            'Salas, escaleras, rutas desde la entrada y dónde comer cerca. Para que nadie llegue tarde a su primera clase.',
+            "Llegar a Beauchef por primera vez es confuso: dos campus, subterráneos y nombres que nadie explica.\n\n## Qué proponemos\n- Completar el mapa con todas las salas y pisos.\n- Sumar los lugares para comer, con opciones veganas y que aceptan Junaeb.\n- Mantenerlo al día cada semestre.",
+            'propuesta', 11, 0,
+        ],
+        [
+            'Así funciona esta página',
+            'Calendario, mapa, calculadora de notas y transparencia: qué hace cada sección y cómo usarla.',
+            "Armamos esta página para que la información de Plan Común esté en un solo lugar.\n\n- El buscador de arriba encuentra ramos, salas y evaluaciones.\n- La calculadora te dice cuánto necesitas para aprobar.\n- El mapa te lleva de la entrada a tu sala.",
+            'noticia', 15, 0,
+        ],
+    ];
+    $insertar($pdo, 'articulos', ['titulo', 'resumen', 'cuerpo', 'categoria', 'destacado', 'estado', 'publicado_en', 'autor'], array_map(
+        static fn(array $a): array => [$a[0], $a[1], $a[2], $a[3], $a[5], 'publicado', $dia(-$a[4]) . ' 10:00:00', null],
+        $articulos
+    ));
 
     $directiva = [
         ['Mari', 'Presidenta'], ['Mikel', 'Vicepresidente'], ['Benja', 'Secretario'],

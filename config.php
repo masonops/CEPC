@@ -12,17 +12,30 @@
 declare(strict_types=1);
 
 return [
-    /* --- Identidad ------------------------------------------------------ */
+    /* --- Modo del sitio -------------------------------------------------- */
+    // 'lista': sitio de campaña de la lista (antes y durante las elecciones).
+    //          Habla como lista, no como CEPC, y muestra las propuestas.
+    // 'cepc':  sitio del centro de estudiantes, si la lista gana.
+    'modo' => 'lista',
+
+    'lista' => [
+        'nombre'      => '∀∃!',
+        'lema'        => 'Para todos existe un único',
+        'descripcion' => 'Lista al Centro de Estudiantes de Plan Común',
+    ],
+
+    /* --- Identidad del centro de estudiantes ---------------------------- */
     'nombre'    => 'Centro de Estudiantes de Plan Común',
     'sigla'     => 'CEPC',
     'facultad'  => 'Facultad de Ciencias Físicas y Matemáticas, Universidad de Chile',
     'direccion' => 'Beauchef 851, Santiago',
 
     /* --- Contacto ------------------------------------------------------- */
-    // Si el panel tiene «instagram» o «correo_contacto» en su tabla
-    // `configuracion`, se usan esos valores y estos quedan de respaldo.
-    'instagram' => 'cepc.uchile',
-    'correo'    => 'cepc@uchile.cl',
+    // En modo 'lista' se usan SÓLO estos dos (los de la lista). En modo
+    // 'cepc', si el panel tiene «instagram» o «correo_contacto» en su tabla
+    // `configuracion`, mandan esos. Vacío = no se muestra.
+    'instagram' => '',
+    'correo'    => '',
 
     /* --- Enlaces -------------------------------------------------------- */
     // Carpeta pública del banco de apuntes (Drive, U-Cursos, etc.).

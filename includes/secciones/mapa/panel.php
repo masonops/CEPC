@@ -31,8 +31,11 @@ $hayLugaresEjemplo = (bool) array_filter($mapa['lugares'], static fn(array $l): 
 // Lo que necesita mapa.js (sin las formas: las lee del SVG).
 $datosMapa = [
     'edificios' => array_map(static fn(array $e): array => array_intersect_key($e, array_flip(
-        ['id', 'nombre', 'corto', 'campus', 'tipo', 'descripcion', 'servicios', 'pisos', 'puerta']
-    )), $mapa['edificios']),
+        ['id', 'nombre', 'corto', 'campus', 'tipo', 'descripcion', 'servicios', 'pisos', 'puerta', 'escaleras']
+    )) + ['zonas' => array_values(array_map(
+        static fn(array $z): array => ['id' => $z['id'], 'nombre' => $z['nombre'], 'descripcion' => $z['descripcion']],
+        $e['zonas']
+    ))], $mapa['edificios']),
     'nodos'        => $mapa['nodos'],
     'aristas'      => $mapa['aristas'],
     'metros'       => $mapa['metros'],

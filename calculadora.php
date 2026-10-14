@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/arranque.php';
 
-$titulo       = 'Calculadora de notas · ' . sitio('sigla');
+$titulo       = 'Calculadora de notas · ' . marca();
 $descripcion  = 'Calcula la nota mínima que necesitas para aprobar con 4,0 o ir a segunda con 3,7.';
 $paginaActual = 'calculadora';
 $estilos      = ['pagina', 'calculadora'];

@@ -43,6 +43,7 @@ function contenido_destacado_manual(): ?array
 function contenido_resumen_evento(string $tipo): string
 {
     return match ($tipo) {
+        'eleccion'  => 'Elecciones del Centro de Estudiantes de Plan Común. Revisa dónde y a qué hora se vota, y lleva tu credencial.',
         'asamblea'  => 'Un espacio abierto para conversar y votar lo que importa en Plan Común. Tu opinión cuenta.',
         'marcha'    => 'Nos encontramos para marchar juntos. Revisa el punto de encuentro y cuídate en el trayecto.',
         'paro'      => 'Jornada de reflexión sin clases. Habrá actividades y espacios de conversación en la facultad.',
@@ -61,7 +62,7 @@ function contenido_ayuda(): array
     return [
         'apuntes' => [
             'titulo' => 'Apuntes y solemnes antiguas',
-            'texto'  => 'Material revisado por Docencia, ordenado por ramo: apuntes, guías, controles y solemnes resueltas.',
+            'texto'  => 'Apuntes, guías, controles y solemnes resueltas, ordenados por ramo.',
         ],
         'tutorias' => [
             'titulo' => 'Tutorías y reforzamientos',
@@ -73,14 +74,46 @@ function contenido_ayuda(): array
         ],
         'docencia' => [
             'titulo' => 'Problemas académicos',
-            'texto'  => 'Topes de solemnes, notas que no llegan o un trato injusto. Lo llevamos a la Escuela por ti.',
+            'texto'  => es_lista()
+                ? 'Topes de solemnes, notas que no llegan o un trato injusto. Cuéntanos: te orientamos sobre a quién acudir y lo sumamos a nuestras propuestas.'
+                : 'Topes de solemnes, notas que no llegan o un trato injusto. Lo llevamos a la Escuela por ti.',
         ],
     ];
 }
 
-/** Preguntas frecuentes. La respuesta admite HTML simple (enlaces, <strong>). */
+/**
+ * Preguntas frecuentes. La respuesta admite HTML simple (enlaces, <strong>).
+ * En modo 'lista' se presenta la lista y las elecciones; en modo 'cepc',
+ * el centro de estudiantes.
+ */
 function contenido_preguntas(): array
 {
+    if (es_lista()) {
+        $lista = sitio('lista');
+        return [
+            [
+                'pregunta'  => '¿Qué es ' . $lista['nombre'] . '?',
+                'respuesta' => 'Somos una lista que se presenta a las elecciones del Centro de Estudiantes de Plan Común. Nuestro nombre se lee «' . esc(mb_strtolower($lista['lema'])) . '», en notación de lógica: ∀ es «para todos» y ∃! es «existe un único».',
+            ],
+            [
+                'pregunta'  => '¿Qué es el CEPC?',
+                'respuesta' => 'El Centro de Estudiantes de Plan Común representa a primer y segundo año ante la Escuela de Ingeniería y la Facultad. Organiza actividades, acompaña casos académicos y de bienestar, y administra recursos como el banco de apuntes.',
+            ],
+            [
+                'pregunta'  => '¿Cuándo son las elecciones y cómo voto?',
+                'respuesta' => 'Las fechas oficiales de votación y de los debates aparecen en el <a href="' . esc(pagina('calendario')) . '">calendario</a> apenas se confirman. Para votar, lleva tu credencial universitaria.',
+            ],
+            [
+                'pregunta'  => '¿Dónde veo sus propuestas?',
+                'respuesta' => 'En la sección <a href="' . esc(pagina('inicio', 'articulos')) . '">Propuestas y artículos</a> de esta página. Vamos publicando una por una, con el detalle de cómo la haríamos.',
+            ],
+            [
+                'pregunta'  => '¿Puedo sumarme o proponer algo?',
+                'respuesta' => 'Sí, y nos encanta. Todas nuestras propuestas parten de conversaciones con estudiantes: escríbenos por Instagram o correo, o búscanos en el patio.',
+            ],
+        ];
+    }
+
     return [
         [
             'pregunta'  => '¿Qué es el CEPC?',

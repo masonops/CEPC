@@ -22,8 +22,13 @@ $accesos     = [
 <section class="seccion" id="transparencia" aria-labelledby="transparencia-titulo">
   <div class="contenedor cuentas">
     <div class="cuentas__resumen revelar">
-      <h2 id="transparencia-titulo" class="seccion__titulo">Cuentas claras.</h2>
-      <p class="seccion__bajada">Todo lo que entra y sale del CEPC es público. Esto va de <?= esc($anioCuentas) ?>.</p>
+      <?php if (es_lista()): ?>
+        <h2 id="transparencia-titulo" class="seccion__titulo">Cuentas claras, desde el día uno.</h2>
+        <p class="seccion__bajada">Nuestra propuesta: si somos CEPC, todo lo que entre y salga será público. Así se vería (con datos de ejemplo):</p>
+      <?php else: ?>
+        <h2 id="transparencia-titulo" class="seccion__titulo">Cuentas claras.</h2>
+        <p class="seccion__bajada">Todo lo que entra y sale del CEPC es público. Esto va de <?= esc($anioCuentas) ?>.</p>
+      <?php endif; ?>
 
       <?php if ($resumen['movimientos'] === 0): ?>
         <p class="cuentas__vacio">Aún no hay movimientos publicados este año.</p>

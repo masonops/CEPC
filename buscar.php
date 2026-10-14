@@ -15,7 +15,7 @@ require_once __DIR__ . '/includes/arranque.php';
 $consulta   = trim((string) ($_GET['q'] ?? ''));
 $resultados = sitio('estatico', false) ? [] : busqueda_buscar($consulta);
 
-$titulo       = 'Buscar · ' . sitio('sigla');
+$titulo       = 'Buscar · ' . marca();
 $descripcion  = 'Busca ramos, salas, solemnes, entregas y lugares del campus.';
 $paginaActual = 'buscar';
 $estilos      = ['pagina', 'buscar'];

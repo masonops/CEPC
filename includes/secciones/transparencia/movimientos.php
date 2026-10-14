@@ -14,7 +14,7 @@ $movimientos = transparencia_movimientos($anioCuentas);
 <section class="seccion" id="movimientos" aria-labelledby="movimientos-titulo">
   <div class="contenedor">
     <h2 id="movimientos-titulo" class="seccion__titulo">Movimientos</h2>
-    <p class="seccion__bajada">Cada ingreso y gasto de <?= esc($anioCuentas) ?>, tal como está en nuestro libro de cuentas.</p>
+    <p class="seccion__bajada">Cada ingreso y gasto de <?= esc($anioCuentas) ?>, <?= es_lista() ? 'tal como los publicaríamos desde el libro de cuentas.' : 'tal como está en nuestro libro de cuentas.' ?></p>
 
     <?php if ($movimientos === []): ?>
       <div class="vacio"><?= icono('receipt') ?><p><strong>Todavía no hay movimientos registrados.</strong></p></div>

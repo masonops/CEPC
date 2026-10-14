@@ -475,6 +475,35 @@ a:hover {
   text-decoration: none;
 }
 
+/* Sello de la lista: ∀∃! en blanco sobre el azul, con un subrayado lila. */
+.marca__sello {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--marca-azul);
+  color: #ffffff;
+  font-family: var(--fuente-titulo);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.marca__sello::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 10px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--marca-lila);
+  transform: translateX(-50%);
+}
+
 .marca__logo {
   width: 26px;
   height: auto;
@@ -601,6 +630,11 @@ a:hover {
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
+}
+
+.seccion__cabecera--fila > .enlace-flecha {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .seccion__cabecera--centro {

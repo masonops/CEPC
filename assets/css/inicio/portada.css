@@ -263,3 +263,52 @@
     display: none;
   }
 }
+
+/* --- Modo lista ---------------------------------------------------------- */
+
+.portada__evento-tipo {
+  color: var(--azul-texto);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.portada__evento-titulo {
+  margin: 2px 0 16px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.portada__evento-ics {
+  margin-top: 18px;
+  font-size: 15px;
+}
+
+/* Sello grande de la lista cuando no hay fechas próximas. */
+.portada__sello {
+  display: grid;
+  place-items: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 48px;
+  background: var(--marca-azul);
+  color: #ffffff;
+  font-family: var(--fuente-titulo);
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  box-shadow: inset 0 -10px 0 -4px var(--marca-lila);
+}
+
+@media (max-width: 860px) {
+  .portada__evento-tipo,
+  .portada__evento-titulo,
+  .portada__evento-ics {
+    grid-column: 1 / -1;
+  }
+
+  .portada__evento-titulo {
+    margin-bottom: 4px;
+  }
+}

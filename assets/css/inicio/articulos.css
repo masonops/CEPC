@@ -1,0 +1,142 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   inicio/articulos.css — Propuestas y artículos en la portada. La etiqueta
+   de categoría también la usan articulos.php y articulo.php.
+   ========================================================================== */
+
+.etiqueta-articulo {
+  display: inline-flex;
+  align-self: flex-start;
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: var(--r-pildora);
+  background: var(--fondo-2);
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.etiqueta-articulo--propuesta {
+  background: var(--azul-tenue);
+  color: var(--azul-texto);
+}
+
+.etiqueta-articulo--fechas {
+  background: var(--lila-suave);
+  color: var(--lila-texto);
+}
+
+.articulos {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 16px clamp(24px, 4vw, 48px);
+  align-items: start;
+}
+
+.articulo-principal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 300px;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: var(--r-grande);
+  background:
+    radial-gradient(80% 100% at 100% 0%, color-mix(in srgb, var(--marca-lila) 22%, transparent), transparent 70%),
+    radial-gradient(60% 90% at 0% 100%, var(--azul-tenue), transparent 70%),
+    var(--superficie);
+  border: 1px solid var(--linea);
+  color: var(--texto);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease-suave);
+}
+
+.articulo-principal:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-flotante);
+}
+
+.articulo-principal__imagen {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--r-media);
+}
+
+.articulo-principal h3 {
+  font-family: var(--fuente-titulo);
+  font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.articulo-principal p {
+  max-width: 52ch;
+  color: var(--texto-2);
+  font-size: 18px;
+}
+
+.articulo-principal__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.articulo-principal__pie .enlace-flecha {
+  color: var(--azul-texto);
+}
+
+.articulo-principal:hover .enlace-flecha .icono {
+  transform: translateX(3px);
+}
+
+.articulos__lista li + li {
+  border-top: 1px solid var(--linea);
+}
+
+.articulo-fila {
+  display: grid;
+  gap: 6px;
+  padding: 18px 4px;
+  color: var(--texto);
+}
+
+.articulos__lista li:first-child .articulo-fila {
+  padding-top: 4px;
+}
+
+.articulo-fila:hover {
+  text-decoration: none;
+}
+
+.articulo-fila strong {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+  transition: color 0.2s var(--ease-suave);
+}
+
+.articulo-fila:hover strong {
+  color: var(--azul-texto);
+}
+
+.articulo-fila time {
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .articulos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .articulo-principal {
+    min-height: 0;
+  }
+}

@@ -1,11 +1,17 @@
-# Sitio público · CEPC
+# Sitio público · ∀∃! (lista al CEPC)
 
-El sitio que ven los estudiantes de Plan Común. Informativo y tranquilo,
-con estas páginas:
+**∀∃! — «Para todos existe un único»** es una lista que se presenta a las
+elecciones del Centro de Estudiantes de Plan Común (FCFM). Este sitio sirve
+primero para dar a conocer la lista y sus propuestas, y además muestra lo
+útil para cualquier estudiante: fechas de evaluaciones y elecciones, mapa
+del campus y calculadora de notas. Si la lista gana, el mismo sitio pasa a
+ser el del CEPC cambiando una línea (ver *Modo lista o modo CEPC*).
 
 | Página | Qué tiene |
 |---|---|
-| `index.php` | Portada: banner con lo más importante, próximas fechas, recursos, novedades, cuentas claras, quiénes somos y preguntas frecuentes |
+| `index.php` | Portada: lema y próxima fecha importante, propuestas y artículos, próximas fechas, recursos, Instagram, cuentas claras, quiénes somos y preguntas frecuentes |
+| `articulos.php` | Todas las propuestas y publicaciones, con filtro por categoría |
+| `articulo.php?id=N` | Una publicación completa |
 | `calendario.php` | Mes completo con solemnes, controles, entregas, actividades y asambleas; filtros y detalle por día |
 | `mapa.php` | Mapa interactivo de Beauchef 850 y 851: edificios, pisos y salas, rutas desde la entrada y dónde comer |
 | `calculadora.php` | Cuánto necesitas en lo que queda para aprobar (4,0) o ir a segunda (3,7) |
@@ -25,6 +31,8 @@ demás:
 ```
 index.php, calendario.php, …        cada página sólo junta sus secciones
 includes/secciones/inicio/          una sección de la portada por archivo
+includes/secciones/articulos/       (listado.php)
+includes/secciones/articulo/        (cuerpo.php, mas.php)
 includes/secciones/calendario/      (mes.php, lista.php)
 includes/secciones/mapa/            (lienzo.php, panel.php)
 includes/secciones/calculadora/     (calculadora.php, explicacion.php)
@@ -39,6 +47,30 @@ assets/js/<página>.js               la interacción de cada página
 
 Para cambiar el orden de la portada o quitar una sección, edita la lista
 `$secciones` de `index.php`.
+
+---
+
+## Modo lista o modo CEPC
+
+En `config.php`:
+
+```php
+'modo'  => 'lista',   // 'lista' mientras somos candidatura; 'cepc' si ganamos
+'lista' => ['nombre' => '∀∃!', 'lema' => 'Para todos existe un único', …],
+'instagram' => '',    // cuenta de la lista, sin @
+'correo'    => '',    // correo de la lista
+```
+
+- **`lista`**: la marca es el sello ∀∃!, los textos hablan de «nuestras
+  propuestas», la transparencia se presenta como propuesta («así se vería»),
+  el pie aclara que no es el sitio oficial del CEPC, y el Instagram y correo
+  salen sólo de `config.php` (si están vacíos, no aparecen).
+- **`cepc`**: vuelve el logo y los textos del centro de estudiantes, y el
+  Instagram y correo se leen del panel.
+
+Los textos que cambian según el modo están en cada sección con
+`es_lista() ? '…' : '…'`, y las preguntas frecuentes en
+`includes/contenido.php` → `contenido_preguntas()`.
 
 ---
 
@@ -120,6 +152,7 @@ Si el panel vive en otra carpeta, indícala en `config.php` → `panel_ruta`
 | Sección | Se edita en | Qué se publica |
 |---|---|---|
 | **Banner** | Automático, o `includes/contenido.php` → `contenido_destacado_manual()` | Ver abajo |
+| **Propuestas y artículos** | Panel → *Artículos* (por hacer), tabla `articulos` | Las de estado «publicado» con fecha de hoy o anterior; las marcadas como destacadas van primero. Ver abajo. |
 | **Próximas fechas** | Panel → *Calendario* | Solemnes, controles, entregas, asambleas, actividades, sunsets, marchas y paros. **Nunca** las reuniones de directiva ni los plazos internos. |
 | **Apuntes** | Panel → *Docencia* | Sólo cuenta el material marcado como verificado. |
 | **Tutorías** | Panel → *Docencia → Tutorías* | Las abiertas y futuras, con cupos libres. Sin datos de contacto del tutor. |
@@ -130,12 +163,29 @@ Si el panel vive en otra carpeta, indícala en `config.php` → `panel_ruta`
 | **Textos fijos y preguntas** | `includes/contenido.php` | |
 | **Instagram y correo** | Tabla `configuracion` del panel, o `config.php` | |
 
+### Propuestas y artículos
+
+Se guardan en la tabla `articulos` (esquema en `sql/articulos.sql`, para
+MySQL y SQLite). Mientras la tabla no exista, la portada muestra «Pronto
+publicaremos nuestras propuestas» y nada se rompe.
+
+| Columna | Qué es |
+|---|---|
+| `titulo`, `resumen` | Lo que se ve en la tarjeta |
+| `cuerpo` | Texto simple: párrafos separados por una línea en blanco, `## ` para un subtítulo y `- ` para listas. No acepta HTML. |
+| `categoria` | `propuesta`, `fechas` o `noticia` |
+| `imagen` | URL opcional de una imagen |
+| `destacado` | 1 para que vaya grande en la portada |
+| `estado`, `publicado_en` | Sólo se ven las `publicado` con fecha ya cumplida |
+
 ### Cómo se elige el banner
 
 1. Si hay un **destacado manual** en `includes/contenido.php`, ése.
-2. Si no, el **evento más importante de las próximas 3 semanas**: asambleas,
-   marchas y paros pesan más que actividades y sunsets, y éstos más que una
-   solemne. A igual peso, el más próximo.
+2. Si no, el **evento más importante de las próximas 3 semanas**: las
+   elecciones pesan más que todo; luego asambleas, marchas y paros; luego
+   actividades y sunsets; y al final las solemnes. A igual peso, el más
+   próximo. (Para las elecciones, el panel necesita el tipo de evento
+   `eleccion`.)
 3. Si no hay ninguno, la **última publicación de Instagram** si tiene menos
    de 10 días.
 4. Si tampoco, el próximo evento aunque esté lejos.
@@ -154,6 +204,8 @@ la agenda tiene el mismo botón.
 | Quiero… | Archivo |
 |---|---|
 | Cambiar correo, Instagram, dirección o el enlace al banco de apuntes | `config.php` |
+| Cambiar el nombre, lema o modo (lista / CEPC) | `config.php` → `modo` y `lista` |
+| Cambiar las categorías de las publicaciones | `includes/datos-articulos.php` → `ARTICULO_CATEGORIAS` |
 | Fijar una noticia en el banner | `includes/contenido.php` → `contenido_destacado_manual()` |
 | Cambiar las preguntas frecuentes o los textos de las tarjetas | `includes/contenido.php` |
 | Cambiar qué tipos de evento son públicos o cuánto pesan | `includes/datos.php` → `TIPOS_PUBLICOS` |
@@ -183,10 +235,19 @@ completarlos:
 | `edificios.php` | Nombre, descripción, servicios, pisos y salas | **Sí** |
 | `rutas.php` | Red de caminos (nodos y uniones) para calcular rutas | Sí, para sumar atajos |
 | `lugares.php` | Dónde comer: posición, etiquetas (vegano, Junaeb…) y horario | **Sí** |
+| `marcadores.php` | Escaleras dibujadas sobre el plano (suben o bajan) | **Sí** |
 
 - **Orientación:** norte arriba. Beauchef 851 a la izquierda y 850 a la
   derecha (el plano original de `referencias/mapas/` estaba girado; el script
   lo gira 90° a la derecha).
+- **Edificios:** la Escuela incluye la Biblioteca (arriba), el Hall Sur
+  (abajo) y el pasillo central con sus escaleras; Sobria (piso 1) tiene la
+  Cafeta en el piso -1; Ebria es el espacio social de afuera. Los nombres
+  y partes se cambian en `edificios.php` (`'zonas'`).
+- **Rehacer las formas:** `herramientas/trazar-mapa.py` necesita Python con
+  `opencv-python-headless`, `numpy` y `shapely`. Lee los planos de
+  `referencias/mapas/` y vuelve a escribir `geometria.php` (formas, líneas
+  del patio y dónde cabe el nombre de cada edificio).
 - **Coordenadas:** abre `mapa.php?coordenadas=1` para ver una cuadrícula y
   la posición del mouse; así se ubican lugares y nodos nuevos.
 - **Pendiente:** las **salas y pisos son de ejemplo** (el plano no trae

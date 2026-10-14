@@ -1,0 +1,169 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   articulos.css — Lista de publicaciones (articulos.php) y una publicación
+   completa (articulo.php). La etiqueta de categoría está en
+   inicio/articulos.css.
+   ========================================================================== */
+
+.seccion--pegada {
+  padding-top: clamp(16px, 2vw, 24px);
+}
+
+.contenedor--texto {
+  max-width: calc(720px + var(--margen) * 2);
+}
+
+/* Lista ------------------------------------------------------------------ */
+
+.articulos-filtro {
+  margin-bottom: 24px;
+}
+
+.tarjetas-articulo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+
+.tarjetas-articulo > li[hidden] {
+  display: none;
+}
+
+.tarjeta-articulo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 24px;
+  border-radius: var(--r-grande);
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  color: var(--texto);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease-suave);
+}
+
+.tarjeta-articulo:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-flotante);
+}
+
+.tarjeta-articulo--destacada {
+  background:
+    radial-gradient(90% 100% at 100% 0%, color-mix(in srgb, var(--marca-lila) 18%, transparent), transparent 70%),
+    var(--superficie);
+}
+
+.tarjeta-articulo h2,
+.tarjeta-articulo h3 {
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.tarjeta-articulo p {
+  color: var(--texto-2);
+}
+
+.tarjeta-articulo time {
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+/* Publicación ------------------------------------------------------------ */
+
+.articulo {
+  padding-block: clamp(24px, 4vw, 48px) clamp(32px, 4vw, 56px);
+}
+
+.articulo__volver {
+  margin-bottom: 28px;
+  font-size: 15px;
+}
+
+.articulo__volver:hover .icono {
+  transform: translateX(-3px);
+}
+
+.articulo__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.articulo__titulo {
+  font-family: var(--fuente-titulo);
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.articulo__resumen {
+  color: var(--texto-2);
+  font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
+  line-height: 1.4;
+}
+
+.articulo__datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--linea);
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.articulo__imagen {
+  width: 100%;
+  margin-top: 28px;
+  border-radius: var(--r-grande);
+}
+
+.articulo__texto {
+  margin-top: 28px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.articulo__texto > * + * {
+  margin-top: 1em;
+}
+
+.articulo__texto h2 {
+  margin-top: 1.6em;
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.articulo__texto ul {
+  padding-left: 1.2em;
+  list-style: disc;
+}
+
+.articulo__texto li + li {
+  margin-top: 0.4em;
+}
+
+.articulo__texto li::marker {
+  color: var(--marca-lila);
+}
+
+.articulo-mas {
+  border-top: 1px solid var(--linea);
+}
+
+.articulo-mas__titulo {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}

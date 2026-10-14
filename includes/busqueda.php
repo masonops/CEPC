@@ -12,7 +12,7 @@
  * en busqueda_indice().
  *
  * Forma de cada elemento:
- *   'grupo'    evaluacion · tarea · sala · edificio · ramo · lugar · pagina
+ *   'grupo'    evaluacion · tarea · articulo · sala · edificio · ramo · lugar · pagina
  *   'titulo'   lo que se muestra en grande
  *   'detalle'  la línea de abajo
  *   'url'      a dónde lleva
@@ -26,6 +26,7 @@ declare(strict_types=1);
 const BUSQUEDA_GRUPOS = [
     'evaluacion' => ['titulo' => 'Evaluaciones',        'icono' => 'graduation-cap'],
     'tarea'      => ['titulo' => 'Tareas y entregas',   'icono' => 'clipboard-text'],
+    'articulo'   => ['titulo' => 'Propuestas y artículos', 'icono' => 'megaphone'],
     'sala'       => ['titulo' => 'Salas',               'icono' => 'door'],
     'ramo'       => ['titulo' => 'Ramos',               'icono' => 'book-open-text'],
     'edificio'   => ['titulo' => 'Edificios',           'icono' => 'buildings'],
@@ -37,6 +38,7 @@ function busqueda_indice(): array
 {
     return array_merge(
         busqueda_evaluaciones(),
+        busqueda_articulos(),
         busqueda_salas(),
         busqueda_ramos(),
         busqueda_edificios(),
@@ -66,6 +68,18 @@ function busqueda_evaluaciones(): array
         ];
     }
     return $items;
+}
+
+/** Propuestas y publicaciones del panel. */
+function busqueda_articulos(): array
+{
+    return array_map(static fn(array $a): array => [
+        'grupo'   => 'articulo',
+        'titulo'  => $a['titulo'],
+        'detalle' => $a['categoria_texto'] . ' · ' . ucfirst(fecha_larga($a['fecha'])),
+        'url'     => $a['url'],
+        'claves'  => (string) ($a['resumen'] ?? ''),
+    ], datos_articulos(100));
 }
 
 /** Salas del mapa (B12, Auditorio Gorbea…). */
@@ -107,8 +121,20 @@ function busqueda_edificios(): array
             'titulo'  => $e['nombre'],
             'detalle' => 'Beauchef ' . $e['campus'] . ($e['descripcion'] !== '' ? ' · ' . $e['descripcion'] : ''),
             'url'     => pagina('mapa') . '?edificio=' . rawurlencode($e['id']),
-            'claves'  => $e['corto'] . ' ' . implode(' ', $e['servicios']),
+            'claves'  => str_replace("\n", ' ', $e['corto']) . ' ' . implode(' ', $e['servicios']),
         ];
+        foreach ($e['zonas'] as $z) {
+            if ($z['id'] === 'pasillo') {
+                continue;
+            }
+            $items[] = [
+                'grupo'   => 'edificio',
+                'titulo'  => $z['nombre'],
+                'detalle' => $e['nombre'] . ($z['descripcion'] !== '' ? ' · ' . $z['descripcion'] : ''),
+                'url'     => pagina('mapa') . '?edificio=' . rawurlencode($e['id']),
+                'claves'  => '',
+            ];
+        }
     }
     return $items;
 }
@@ -137,6 +163,7 @@ function busqueda_paginas(): array
         ['grupo' => 'pagina', 'titulo' => $titulo, 'detalle' => $detalle, 'url' => $url, 'claves' => $claves];
 
     return [
+        $p(es_lista() ? 'Propuestas y artículos' : 'Publicaciones', 'Todo lo que hemos publicado', pagina('articulos'), 'propuestas noticias lista programa'),
         $p('Calendario', 'Solemnes, controles, entregas y actividades', pagina('calendario'), 'fechas agenda pruebas'),
         $p('Mapa del campus', 'Edificios, salas, rutas y dónde comer', pagina('mapa'), 'plano ruta como llegar'),
         $p('Calculadora de notas', 'Cuánto necesitas para aprobar o ir a segunda', pagina('calculadora'), 'ponderacion promedio nota minima examen'),

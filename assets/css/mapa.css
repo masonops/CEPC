@@ -43,20 +43,39 @@ body:has(.aviso-demo) .lienzo {
   outline: none;
 }
 
-.mapa-edificio[data-edificio]:hover polygon,
-.mapa-edificio[data-edificio]:focus-visible polygon {
+.mapa-edificio[data-edificio]:hover polygon:not(.mapa-zona),
+.mapa-edificio[data-edificio]:focus-visible polygon:not(.mapa-zona) {
   fill: var(--mapa-edificio-hover);
 }
 
-.mapa-edificio[data-edificio]:focus-visible polygon {
+.mapa-edificio[data-edificio]:focus-visible polygon:not(.mapa-zona) {
   stroke: var(--azul-texto);
   stroke-width: calc(2px * var(--trazo, 1));
 }
 
-.mapa-edificio--elegido polygon,
-.mapa-edificio--elegido:hover polygon {
+.mapa-edificio--elegido polygon:not(.mapa-zona),
+.mapa-edificio--elegido:hover polygon:not(.mapa-zona) {
   fill: var(--azul);
   stroke: var(--azul);
+}
+
+/* Dentro del edificio elegido las zonas se ven como tonos del mismo azul. */
+.mapa-edificio--elegido .mapa-zona {
+  fill: rgba(255, 255, 255, 0.16);
+  stroke: rgba(255, 255, 255, 0.35);
+}
+
+.mapa-edificio--elegido .mapa-zona--pasillo {
+  fill: rgba(255, 255, 255, 0.24);
+  stroke: none;
+}
+
+.mapa-svg .mapa-etiqueta--zona.etiqueta--zona-elegida {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+.mapa-marcador {
+  cursor: help;
 }
 
 .mapa-etiquetas text {
@@ -447,6 +466,47 @@ body:has(.aviso-demo) .lienzo {
   color: var(--sobre-azul);
 }
 
+.ficha__zonas li,
+.ficha__escaleras li {
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.ficha__zonas li + li,
+.ficha__escaleras li + li {
+  border-top: 1px solid var(--linea);
+}
+
+.ficha__zonas strong {
+  display: block;
+  font-weight: 600;
+}
+
+.ficha__zonas span {
+  color: var(--texto-2);
+}
+
+.ficha__escaleras li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texto-2);
+}
+
+.ficha__escaleras li::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border: 2px solid var(--azul);
+  border-radius: 50%;
+}
+
+.ficha__escalera--baja::before {
+  border-color: var(--lila-texto) !important;
+}
+
 .ficha__salas li {
   display: flex;
   align-items: flex-start;
@@ -461,10 +521,16 @@ body:has(.aviso-demo) .lienzo {
 }
 
 .ficha__sala-icono {
-  width: 18px;
-  color: var(--texto-3);
-  text-align: center;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin: 7px 4px 0;
+  border-radius: 50%;
+  background: var(--texto-3);
 }
+
+.ficha__sala-icono--auditorio { background: var(--azul); }
+.ficha__sala-icono--social { background: var(--marca-lila); }
 
 .ficha__salas li > span:last-child {
   display: flex;

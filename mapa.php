@@ -21,7 +21,7 @@ require_once __DIR__ . '/includes/arranque.php';
 
 $verCoordenadas = !sitio('estatico', false) && !empty($_GET['coordenadas']);
 
-$titulo       = 'Mapa del campus · ' . sitio('sigla');
+$titulo       = 'Mapa del campus · ' . marca();
 $descripcion  = 'Mapa de Beauchef 850 y 851: edificios, salas, rutas desde la entrada y dónde comer cerca.';
 $paginaActual = 'mapa';
 $estilos      = ['pagina', 'mapa-dibujo', 'mapa'];

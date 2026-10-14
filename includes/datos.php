@@ -28,6 +28,7 @@ const TIPOS_PUBLICOS = [
     'control'   => ['etiqueta' => 'Control',       'peso' => 1],
     'entrega'   => ['etiqueta' => 'Entrega',       'peso' => 1],
     'examen'    => ['etiqueta' => 'Examen',        'peso' => 1],
+    'eleccion'  => ['etiqueta' => 'Elecciones',    'peso' => 4],
     'otro'      => ['etiqueta' => 'Evento',        'peso' => 1],
 ];
 
@@ -67,7 +68,7 @@ function datos_categoria_evento(string $tipo): string
 {
     return match ($tipo) {
         'solemne', 'control', 'examen', 'entrega' => 'evaluacion',
-        'asamblea', 'marcha', 'paro'              => 'comunidad',
+        'asamblea', 'marcha', 'paro', 'eleccion'  => 'comunidad',
         default                                   => 'actividad',
     };
 }
@@ -104,6 +105,10 @@ function datos_ajuste(string $clavePanel, string $claveSitio): string
         foreach (datos_filas('SELECT clave, valor FROM configuracion') as $fila) {
             $ajustes[(string) $fila['clave']] = (string) $fila['valor'];
         }
+    }
+    // La lista usa sus propios datos de contacto, nunca los del CEPC.
+    if (es_lista() && in_array($claveSitio, ['instagram', 'correo'], true)) {
+        return (string) sitio($claveSitio, '');
     }
     $valor = trim($ajustes[$clavePanel] ?? '');
     return $valor !== '' ? $valor : (string) sitio($claveSitio, '');

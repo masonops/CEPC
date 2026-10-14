@@ -8,6 +8,7 @@
  *   edificios.php  nombres, pisos y salas
  *   rutas.php      caminos para calcular rutas
  *   lugares.php    dónde comer
+ *   marcadores.php escaleras dentro de los edificios
  */
 
 declare(strict_types=1);
@@ -25,6 +26,7 @@ function mapa_datos(): array
     $info      = require $carpeta . 'edificios.php';
     $rutas     = require $carpeta . 'rutas.php';
     $lugares   = require $carpeta . 'lugares.php';
+    $marcadores = require $carpeta . 'marcadores.php';
 
     // Puerta de cada edificio, para que las rutas sepan dónde llegar.
     $puertas = [];
@@ -38,6 +40,25 @@ function mapa_datos(): array
     $formas = $geometria['edificios'] + $geometria['espacios'];
     foreach ($formas as $id => $poligono) {
         $e = $info[$id] ?? ['nombre' => ucfirst($id)];
+        [$ex, $ey, $ancho, $alto] = $geometria['etiquetas'][$id] ?? array_merge(mapa_centro($poligono), [0, 0]);
+
+        // Zonas interiores (Biblioteca, Hall Sur, pasillo…).
+        $zonas = [];
+        foreach ($geometria['zonas'] as $zid => $zona) {
+            if ($zona['edificio'] !== $id) {
+                continue;
+            }
+            $zi = $e['zonas'][$zid] ?? ['nombre' => ucfirst($zid)];
+            $ze = $geometria['etiquetas'][$zid] ?? null;
+            $zonas[$zid] = [
+                'id'          => $zid,
+                'nombre'      => $zi['nombre'],
+                'descripcion' => $zi['descripcion'] ?? '',
+                'poligono'    => $zona['poligono'],
+                'etiqueta'    => $ze,
+            ];
+        }
+
         $edificios[$id] = [
             'id'          => $id,
             'nombre'      => $e['nombre'],
@@ -48,8 +69,10 @@ function mapa_datos(): array
             'servicios'   => $e['servicios'] ?? [],
             'pisos'       => $e['pisos'] ?? [],
             'poligono'    => $poligono,
-            'etiqueta'    => $e['etiqueta'] ?? mapa_centro($poligono),
+            'etiqueta'    => [$ex, $ey, $ancho, $alto],
+            'zonas'       => $zonas,
             'puerta'      => $puertas[$id] ?? null,
+            'escaleras'   => array_values(array_filter($marcadores, static fn(array $m): bool => ($m['edificio'] ?? '') === $id)),
         ];
     }
 
@@ -63,6 +86,7 @@ function mapa_datos(): array
         'aristas'       => $rutas['aristas'],
         'metros'        => (float) $rutas['metros_por_unidad'],
         'lugares'       => $lugares,
+        'marcadores'    => $marcadores,
         'salas_ejemplo' => defined('MAPA_SALAS_DE_EJEMPLO') && MAPA_SALAS_DE_EJEMPLO,
     ];
 }
@@ -85,6 +109,33 @@ function mapa_centro(string $poligono): array
         return $p[0];
     }
     return [round($cx / (3 * $area)), round($cy / (3 * $area))];
+}
+
+/** El dibujo (<path>) de un ícono de Phosphor, para usarlo dentro del mapa. */
+function mapa_icono_trazo(string $nombre): string
+{
+    $svg = (string) @file_get_contents(SITIO_RAIZ . '/assets/iconos/' . basename($nombre) . '.svg');
+    return preg_match_all('/<path[^>]*\/>/', $svg, $m) ? implode('', $m[0]) : '';
+}
+
+/**
+ * Texto de una etiqueta. Lleva el espacio libre que tiene dentro de su
+ * forma (ancho y alto) para que mapa.js lo gire o lo esconda si no cabe.
+ * Un "\n" en el nombre lo parte en dos líneas.
+ */
+function mapa_texto_etiqueta(string $id, string $texto, array $etiqueta, string $clase = '', string $padre = ''): string
+{
+    [$x, $y, $ancho, $alto] = $etiqueta + [0, 0, 0, 0];
+    $lineas = explode("\n", $texto);
+    $h = '<text x="' . $x . '" y="' . $y . '" data-etiqueta="' . esc($id) . '" data-ancho="' . $ancho . '" data-alto="' . $alto . '"'
+        . ($padre !== '' ? ' data-padre="' . esc($padre) . '"' : '')
+        . ($clase !== '' ? ' class="' . esc($clase) . '"' : '') . '>';
+    $n = count($lineas);
+    foreach ($lineas as $i => $linea) {
+        // Líneas centradas en torno a y (1,15 em entre líneas).
+        $h .= '<tspan x="' . $x . '" dy="' . ($i === 0 ? round(-($n - 1) * 0.575, 3) : 1.15) . 'em">' . esc($linea) . '</tspan>';
+    }
+    return $h . '</text>';
 }
 
 /** Todas las salas, con su edificio y piso, para el buscador. */
@@ -126,6 +177,12 @@ function mapa_svg(array $opciones = []): string
     $h = '<svg class="mapa-svg" viewBox="' . esc($vista) . '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' . esc($o['titulo']) . '"'
         . ($o['interactivo'] ? ' data-mapa-svg' : '') . '>';
 
+    // Símbolos reutilizables (íconos de Phosphor dentro del mapa).
+    $h .= '<defs>'
+        . '<symbol id="sim-escalera" viewBox="0 0 256 256">' . mapa_icono_trazo('stairs') . '</symbol>'
+        . '<symbol id="sim-comida" viewBox="0 0 256 256">' . mapa_icono_trazo('fork-knife') . '</symbol>'
+        . '</defs>';
+
     // Suelo, terrenos de cada campus y calles.
     $h .= '<rect class="mapa-suelo" x="-2000" y="-2000" width="' . ($d['ancho'] + 4000) . '" height="' . ($d['alto'] + 4000) . '"/>';
     if ($o['calles']) {
@@ -149,10 +206,11 @@ function mapa_svg(array $opciones = []): string
             . '</g>';
     }
 
-    // Líneas de los patios centrales.
+    // Líneas de los patios centrales (bordes de jardines y caminos).
     $h .= '<g class="mapa-patios" aria-hidden="true">';
     foreach ($d['patios'] as $trazo) {
-        $h .= '<polyline points="' . esc($trazo) . '"/>';
+        [$x1, $y1, $x2, $y2] = explode(',', $trazo);
+        $h .= '<line x1="' . $x1 . '" y1="' . $y1 . '" x2="' . $x2 . '" y2="' . $y2 . '"/>';
     }
     $h .= '</g>';
 
@@ -165,15 +223,35 @@ function mapa_svg(array $opciones = []): string
         } else {
             $h .= '<g class="' . $clase . '">';
         }
-        $h .= '<polygon points="' . esc($e['poligono']) . '"/></g>';
+        $h .= '<polygon points="' . esc($e['poligono']) . '"/>';
+        foreach ($e['zonas'] as $z) {
+            $h .= '<polygon class="mapa-zona mapa-zona--' . esc($z['id']) . '" points="' . esc($z['poligono']) . '"/>';
+        }
+        $h .= '</g>';
     }
     $h .= '</g>';
 
     if ($o['etiquetas']) {
         $h .= '<g class="mapa-etiquetas" aria-hidden="true">';
         foreach ($d['edificios'] as $e) {
-            [$x, $y] = $e['etiqueta'];
-            $h .= '<text x="' . $x . '" y="' . $y . '" data-etiqueta="' . esc($e['id']) . '">' . esc($e['corto']) . '</text>';
+            $h .= mapa_texto_etiqueta($e['id'], $e['corto'], $e['etiqueta']);
+            foreach ($e['zonas'] as $z) {
+                if ($z['etiqueta']) {
+                    $h .= mapa_texto_etiqueta($z['id'], $z['nombre'], $z['etiqueta'], 'mapa-etiqueta--zona', $e['id']);
+                }
+            }
+        }
+        $h .= '</g>';
+    }
+
+    // Escaleras.
+    if ($o['interactivo']) {
+        $h .= '<g class="mapa-marcadores">';
+        foreach ($d['marcadores'] as $m) {
+            $voltear = $m['tipo'] === 'baja' ? ' transform="scale(-1 1)"' : '';
+            $h .= '<g class="mapa-marcador mapa-marcador--' . esc($m['tipo']) . '" data-base="translate(' . $m['x'] . ' ' . $m['y'] . ')" transform="translate(' . $m['x'] . ' ' . $m['y'] . ')">'
+                . '<title>' . esc($m['texto']) . '</title>'
+                . '<circle r="6.5"/><g' . $voltear . '><use href="#sim-escalera" x="-4.2" y="-4.2" width="8.4" height="8.4"/></g></g>';
         }
         $h .= '</g>';
     }
@@ -200,7 +278,8 @@ function mapa_svg(array $opciones = []): string
         foreach ($d['lugares'] as $id => $l) {
             $h .= '<g class="mapa-lugar" data-lugar="' . esc($id) . '" transform="translate(' . $l['x'] . ' ' . $l['y'] . ')"'
                 . ($o['interactivo'] ? ' tabindex="0" role="button" aria-label="' . esc($l['nombre']) . '"' : '') . '>'
-                . '<circle r="11"/><path d="M-3.5 -5v4.5a2 2 0 0 0 4 0V-5M-1.5 -5v10M3.5 -5c1.5 0 1.5 4 0 5v5" /></g>';
+                . '<title>' . esc($l['nombre']) . '</title>'
+                . '<circle r="11"/><use href="#sim-comida" x="-6.5" y="-6.5" width="13" height="13"/></g>';
         }
         $h .= '</g>';
     }

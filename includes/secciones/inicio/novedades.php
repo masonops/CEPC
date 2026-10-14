@@ -16,13 +16,17 @@ $urlInstagram  = datos_url_instagram();
 <section class="seccion" id="novedades" aria-labelledby="novedades-titulo">
   <div class="contenedor novedades">
     <div class="novedades__cuenta revelar">
-      <h2 id="novedades-titulo" class="seccion__titulo">Lo último que publicamos.</h2>
-      <p class="seccion__bajada">Avisos, fechas y actividades salen primero en Instagram.</p>
+      <h2 id="novedades-titulo" class="seccion__titulo"><?= es_lista() ? 'También en Instagram.' : 'Lo último que publicamos.' ?></h2>
+      <p class="seccion__bajada"><?= es_lista() ? 'Propuestas, fechas y avisos de la campaña, en formato corto.' : 'Avisos, fechas y actividades salen primero en Instagram.' ?></p>
       <?php if ($urlInstagram !== ''): ?>
         <a class="cuenta" href="<?= esc($urlInstagram) ?>" rel="noopener" target="_blank">
           <span class="cuenta__logo">
-            <img class="solo-claro" src="<?= esc(recurso('assets/img/marca-cepc.png')) ?>" alt="" width="40" height="47">
-            <img class="solo-oscuro" src="<?= esc(recurso('assets/img/marca-cepc-oscuro.png')) ?>" alt="" width="40" height="47">
+            <?php if (es_lista()): ?>
+              <span class="marca__sello" translate="no"><?= esc(sitio('lista')['nombre']) ?></span>
+            <?php else: ?>
+              <img class="solo-claro" src="<?= esc(recurso('assets/img/marca-cepc.png')) ?>" alt="" width="40" height="47">
+              <img class="solo-oscuro" src="<?= esc(recurso('assets/img/marca-cepc-oscuro.png')) ?>" alt="" width="40" height="47">
+            <?php endif; ?>
           </span>
           <span class="cuenta__texto">
             <strong translate="no">@<?= esc($instagram) ?></strong>

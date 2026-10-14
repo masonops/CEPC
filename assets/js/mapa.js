@@ -67,28 +67,55 @@
   var pines = svg.querySelectorAll('.mapa-lugar');
   var entradas = svg.querySelectorAll('.mapa-entradas circle');
 
-  /** Textos de 12 px en pantalla; se ocultan los que no caben en su edificio. */
+  var marcadores = svg.querySelectorAll('.mapa-marcador');
+
+  /** Ancho aproximado de un texto de 1 px de alto (promedio de la fuente del sistema). */
+  function anchoTexto(t) {
+    var lineas = Array.prototype.map.call(t.querySelectorAll('tspan'), function (s) { return s.textContent.length; });
+    return Math.max.apply(null, lineas.length ? lineas : [t.textContent.length]) * 0.56;
+  }
+
+  /**
+   * Etiquetas de tamaño fijo en pantalla (12 px; 10 px las zonas). Cada una
+   * sabe cuánto espacio libre tiene dentro de su forma (data-ancho/alto, lo
+   * calcula herramientas/trazar-mapa.py): si cabe en horizontal se escribe
+   * así; si no, pero el edificio es alto y angosto, se gira; si tampoco,
+   * se esconde hasta acercar el mapa.
+   */
   function ajustarTamanos() {
     var k = escala();
     etiquetas.forEach(function (t) {
-      t.style.fontSize = (12 * k) + 'px';
+      var zona = t.classList.contains('mapa-etiqueta--zona');
+      var px = zona ? 10 : 12;
+      var tam = px * k;
+      t.style.fontSize = tam + 'px';
+      var lineas = t.querySelectorAll('tspan').length || 1;
+      var ancho = anchoTexto(t) * tam + 6 * k;
+      var alto = lineas * tam * 1.15 + 2 * k;
+      var libreX = +t.getAttribute('data-ancho') || 0;
+      var libreY = +t.getAttribute('data-alto') || 0;
+      var x = t.getAttribute('x'), y = t.getAttribute('y');
       var id = t.getAttribute('data-etiqueta');
-      var forma = formas[id];
-      if (!forma) return;
-      var caja = forma.getBBox();
-      // El texto es horizontal: debe caber en el ancho del edificio.
-      var cabe = caja.width * 1.15 / k > t.textContent.length * 6.4;
-      t.style.opacity = cabe || id === elegido ? 1 : 0;
-      t.classList.toggle('etiqueta--elegida', id === elegido);
+      var dueno = t.getAttribute('data-padre') || id;
+
+      var horizontal = ancho <= libreX && alto <= libreY;
+      var vertical = !horizontal && ancho <= libreY && alto <= libreX;
+      t.setAttribute('transform', vertical ? 'rotate(-90 ' + x + ' ' + y + ')' : '');
+      t.style.opacity = horizontal || vertical ? 1 : 0;
+      t.classList.toggle('etiqueta--elegida', dueno === elegido && !zona);
+      t.classList.toggle('etiqueta--zona-elegida', dueno === elegido && zona);
     });
     nombresCalles.forEach(function (t) { t.style.fontSize = (10.5 * k) + 'px'; });
-    pines.forEach(function (p) {
-      var base = p.getAttribute('data-base') || p.getAttribute('transform');
-      p.setAttribute('data-base', base);
-      p.setAttribute('transform', base + ' scale(' + Math.min(Math.max(k, 0.35), 2.2) + ')');
-    });
+    pines.forEach(function (p) { escalarMarca(p, Math.min(Math.max(k, 0.35), 2.2)); });
+    marcadores.forEach(function (m) { escalarMarca(m, Math.min(Math.max(k, 0.5), 1.8)); });
     entradas.forEach(function (c) { c.setAttribute('r', 5 * Math.min(Math.max(k, 0.4), 2)); });
     svg.style.setProperty('--trazo', k);
+  }
+
+  function escalarMarca(el, factor) {
+    var base = el.getAttribute('data-base') || el.getAttribute('transform');
+    el.setAttribute('data-base', base);
+    el.setAttribute('transform', base + ' scale(' + factor + ')');
   }
 
   /** Ancho en píxeles que tapa el panel flotante (0 en el teléfono, donde va abajo). */
@@ -286,6 +313,22 @@
       + '<h2 class="ficha__nombre">' + esc(e.nombre) + '</h2>'
       + (e.descripcion ? '<p class="ficha__descripcion">' + esc(e.descripcion) + '</p>' : '');
 
+    if (e.zonas && e.zonas.length) {
+      html += '<p class="ficha__subtitulo">Partes del edificio</p><ul class="ficha__zonas">';
+      e.zonas.forEach(function (z) {
+        html += '<li><strong>' + esc(z.nombre) + '</strong>' + (z.descripcion ? '<span>' + esc(z.descripcion) + '</span>' : '') + '</li>';
+      });
+      html += '</ul>';
+    }
+
+    if (e.escaleras && e.escaleras.length) {
+      html += '<p class="ficha__subtitulo">Escaleras</p><ul class="ficha__escaleras">';
+      e.escaleras.forEach(function (m) {
+        html += '<li class="ficha__escalera--' + esc(m.tipo) + '">' + esc(m.texto) + '</li>';
+      });
+      html += '</ul>';
+    }
+
     if (e.servicios && e.servicios.length) {
       html += '<ul class="ficha__servicios">' + e.servicios.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>';
     }
@@ -302,8 +345,7 @@
       if (piso && piso.salas.length) {
         html += '<ul class="ficha__salas">';
         piso.salas.forEach(function (s) {
-          html += '<li class="' + (s.codigo === salaElegida ? 'ficha__sala--elegida' : '') + '"><span class="ficha__sala-icono">'
-            + (s.tipo === 'auditorio' ? '◐' : s.tipo === 'laboratorio' ? '◇' : '▢') + '</span>'
+          html += '<li class="' + (s.codigo === salaElegida ? 'ficha__sala--elegida' : '') + '"><span class="ficha__sala-icono ficha__sala-icono--' + esc(s.tipo) + '" aria-hidden="true"></span>'
             + '<span><strong>' + esc(s.nombre) + '</strong><span>' + esc(tipoSala(s.tipo))
             + (s.capacidad ? ' · ' + s.capacidad + ' personas' : '') + '</span></span></li>';
         });
@@ -321,7 +363,7 @@
   }
 
   function tipoSala(t) {
-    return { sala: 'Sala de clases', auditorio: 'Auditorio', laboratorio: 'Laboratorio', oficina: 'Oficina', servicio: 'Servicio' }[t] || 'Sala';
+    return { sala: 'Sala de clases', auditorio: 'Auditorio', laboratorio: 'Laboratorio', oficina: 'Oficina', servicio: 'Servicio', social: 'Espacio para juntarse' }[t] || 'Sala';
   }
 
   function soltarEdificio() {
@@ -394,6 +436,9 @@
   Object.keys(datos.edificios).forEach(function (id) {
     var e = datos.edificios[id];
     indice.push({ tipo: 'edificio', id: id, titulo: e.nombre, detalle: 'Beauchef ' + e.campus, texto: normalizar(e.nombre + ' ' + e.corto) });
+    (e.zonas || []).forEach(function (z) {
+      indice.push({ tipo: 'edificio', id: id, titulo: z.nombre, detalle: e.nombre, texto: normalizar(z.nombre) });
+    });
     (e.pisos || []).forEach(function (p) {
       p.salas.forEach(function (s) {
         indice.push({ tipo: 'sala', id: id, sala: s.codigo, piso: p.nivel, titulo: s.nombre,

@@ -3,8 +3,12 @@
  * CEPC · Sitio público
  * includes/secciones/inicio/portada.php
  *
- * Banner con el destacado: un evento, una noticia o la última
- * publicación de Instagram (ver datos_destacado() en includes/datos.php).
+ * Banner de la portada.
+ *
+ * Modo 'lista' (config.php): presenta la lista con su lema y deja al lado
+ * la próxima fecha importante (las elecciones pesan más que todo).
+ * Modo 'cepc': el destacado ocupa el banner completo (un evento, una
+ * noticia o la última publicación de Instagram; ver datos_destacado()).
  */
 
 declare(strict_types=1);
@@ -20,7 +24,52 @@ $fondoPortada = !empty($destacado['imagen']) ? (string) $destacado['imagen'] : '
   </div>
 
   <div class="contenedor portada__grid">
-    <?php if ($destacado === null): ?>
+    <?php if (es_lista()): $lista = sitio('lista'); ?>
+      <div class="portada__texto">
+        <p class="pildora"><span translate="no"><?= esc($lista['nombre']) ?></span><span>· Lista al CEPC</span></p>
+        <h1 id="portada-titulo" class="portada__titulo"><?= esc($lista['lema']) ?>.</h1>
+        <p class="portada__resumen">Somos una lista al Centro de Estudiantes de Plan Común. Aquí están nuestras propuestas y las fechas que importan.</p>
+        <div class="portada__acciones">
+          <a class="boton boton--primario" href="#articulos">Ver propuestas</a>
+          <a class="boton boton--vidrio" href="<?= esc(pagina('calendario')) ?>">Calendario</a>
+        </div>
+      </div>
+
+      <?php if ($destacado !== null && !empty($destacado['fecha'])):
+        $p = fecha_partes((string) $destacado['fecha']);
+        $cercania = fecha_cercania((string) $destacado['fecha']);
+        $esEvento = ($destacado['tipo'] ?? '') === 'evento';
+      ?>
+        <aside class="portada__tarjeta vidrio" aria-label="Próxima fecha importante">
+          <p class="portada__evento-tipo"><?= esc($destacado['categoria'] ?? $destacado['etiqueta']) ?></p>
+          <p class="portada__evento-titulo"><?= esc($destacado['titulo']) ?></p>
+          <div class="calendario">
+            <span class="calendario__semana"><?= esc($p['semana']) ?></span>
+            <span class="calendario__dia"><?= esc($p['dia']) ?></span>
+            <span class="calendario__mes"><?= esc($p['mes_largo']) ?></span>
+          </div>
+          <dl class="datos">
+            <?php if ($cercania !== null): ?>
+              <div><dt><?= icono('hourglass-simple') ?><span class="oculto">Cuándo</span></dt><dd><?= esc($cercania) ?></dd></div>
+            <?php endif; ?>
+            <?php if (!empty($destacado['hora'])): ?>
+              <div><dt><?= icono('clock') ?><span class="oculto">Hora</span></dt><dd><?= esc(hora_texto($destacado['hora'])) ?></dd></div>
+            <?php endif; ?>
+            <?php if (!empty($destacado['lugar'])): ?>
+              <div><dt><?= icono('map-pin') ?><span class="oculto">Lugar</span></dt><dd><?= esc($destacado['lugar']) ?></dd></div>
+            <?php endif; ?>
+          </dl>
+          <?php if ($esEvento): ?>
+            <a class="enlace-flecha portada__evento-ics" href="<?= esc(enlace_ics((int) $destacado['id'])) ?>" download><?= icono('calendar-blank') ?> Agregar al calendario</a>
+          <?php endif; ?>
+        </aside>
+      <?php else: ?>
+        <div class="portada__tarjeta vidrio portada__tarjeta--logo" aria-hidden="true">
+          <span class="portada__sello" translate="no"><?= esc($lista['nombre']) ?></span>
+        </div>
+      <?php endif; ?>
+
+    <?php elseif ($destacado === null): ?>
       <div class="portada__texto">
         <h1 id="portada-titulo" class="portada__titulo">Hola, Plan Común.</h1>
         <p class="portada__resumen">Fechas, apuntes, tutorías y apoyo para primer y segundo año, en un solo lugar.</p>
