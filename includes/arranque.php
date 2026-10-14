@@ -28,10 +28,15 @@ $SITIO['demo']     = $SITIO['estatico'];
 /* --------------------------------------------------------------------- */
 
 $SITIO['panel_raiz'] = null;
+// Se busca en: ./panel (panel dentro del sitio), ../cepc-panel (este repo)
+// y ../panel.* (subdominio en cPanel, ej. /home/usuario/panel.midominio.cl).
 $candidatas = match (true) {
     $SITIO['estatico']          => [],
     $SITIO['panel_ruta'] !== '' => [$SITIO['panel_ruta']],
-    default                     => [SITIO_RAIZ . '/panel', dirname(SITIO_RAIZ) . '/cepc-panel'],
+    default                     => array_merge(
+        [SITIO_RAIZ . '/panel', dirname(SITIO_RAIZ) . '/cepc-panel'],
+        glob(dirname(SITIO_RAIZ) . '/panel.*', GLOB_ONLYDIR) ?: []
+    ),
 };
 
 foreach ($candidatas as $candidata) {
@@ -54,10 +59,15 @@ if ($SITIO['panel_raiz'] !== null) {
     date_default_timezone_set('America/Santiago');
 }
 
-// Enlace «Acceso directiva»: si el panel vive dentro del sitio, /panel/.
-if ($SITIO['panel_url'] === '' && $SITIO['panel_raiz'] !== null
-    && str_starts_with($SITIO['panel_raiz'], (realpath(SITIO_RAIZ) ?: SITIO_RAIZ) . DIRECTORY_SEPARATOR)) {
-    $SITIO['panel_url'] = basename($SITIO['panel_raiz']) . '/';
+// Enlace «Acceso directiva»: si el panel vive dentro del sitio, /panel/;
+// si está en un subdominio (carpeta panel.midominio.cl), https://panel.midominio.cl/.
+if ($SITIO['panel_url'] === '' && $SITIO['panel_raiz'] !== null) {
+    $carpetaPanel = basename($SITIO['panel_raiz']);
+    if (str_starts_with($SITIO['panel_raiz'], (realpath(SITIO_RAIZ) ?: SITIO_RAIZ) . DIRECTORY_SEPARATOR)) {
+        $SITIO['panel_url'] = $carpetaPanel . '/';
+    } elseif (preg_match('/^panel\.[a-z0-9.-]+\.[a-z]{2,}$/i', $carpetaPanel)) {
+        $SITIO['panel_url'] = 'https://' . strtolower($carpetaPanel) . '/';
+    }
 }
 
 require SITIO_RAIZ . '/includes/utilidades.php';

@@ -6,6 +6,12 @@ SparkedHost** (usa cPanel).
 
 Tiempo estimado: 45 minutos la primera vez.
 
+> **¿Usas subdominios?** (por ejemplo `cepc.midominio.tech` para el sitio y
+> `panel.midominio.tech` para el panel, cada uno con su carpeta en
+> `/home/usuario/`). También funciona: sigue la guía igual, pero lee los
+> recuadros «Con subdominios». El sitio encuentra solo la carpeta
+> `panel.*` que está al lado y enlaza a `https://panel.midominio.tech/`.
+
 ```
 public_html/                 ← este repositorio (sitio público)
 ├── index.php, roomies.php, …
@@ -37,6 +43,11 @@ botón **Login to cPanel**.
 
 1. cPanel → **MultiPHP Manager** (o *Select PHP Version*): elige **PHP 8.2**
    o más nuevo para el dominio.
+
+   > **Con subdominios:** cada subdominio tiene **su propia versión de PHP**
+   > y los nuevos parten con la del sistema (que puede ser PHP 7). Marca la
+   > casilla del sitio **y** la del panel y aplica PHP 8.2 a los dos. Si el
+   > panel queda en PHP 7, muestra un error 500 en blanco.
 2. Si aparece *Select PHP Version → Extensions*, revisa que estén marcadas:
    `pdo_mysql`, `mbstring`, `gd`, `exif`, `fileinfo`, `intl` (opcional).
    Si no aparece esa pantalla, escribe a soporte de SparkedHost y pídeles
@@ -95,6 +106,10 @@ botón **Login to cPanel**.
 
 En File Manager, dentro de `public_html/panel/`, copia `.env.example` como
 `.env` (clic derecho → *Copy*, nombre `.env`) y edítalo (*Edit*):
+
+> **Con subdominios:** el `.env` va en la carpeta del panel
+> (`/home/usuario/panel.midominio.tech/.env`) y `APP_URL` es
+> `https://panel.midominio.tech`.
 
 ```ini
 APP_ENTORNO=produccion
@@ -161,7 +176,9 @@ con la función `mail()` de PHP. Para que no lleguen a spam:
 ## 7. HTTPS
 
 1. cPanel → **SSL/TLS Status** → *Run AutoSSL*. Espera a que el dominio
-   quede con candado verde.
+   quede con candado verde (con subdominios, **cada uno** debe aparecer con
+   candado; si uno sale con certificado «self-signed», vuelve a correr
+   AutoSSL cuando su DNS ya apunte al servidor).
 2. En `public_html/.htaccess` y en `public_html/panel/.htaccess`,
    descomenta el bloque «Forzar HTTPS» (borra los `#` de esas 4 líneas).
 
@@ -198,7 +215,8 @@ con la función `mail()` de PHP. Para que no lleguen a spam:
 
 | Síntoma | Qué revisar |
 |---|---|
-| Página en blanco o «500» | cPanel → *Errors* (o `error_log` en la carpeta). Casi siempre es la versión de PHP (paso 1) o un error al copiar `.env` |
+| Página en blanco o «500» | Abre `diagnostico.php` del panel: dice el error exacto. Si dice `syntax error, unexpected ','` (sin la palabra *token*), ese dominio corre **PHP 7**: súbelo a 8.2 en MultiPHP Manager (paso 1). También sirve cPanel → *Errors* |
+| Renombraste `.htaccess` para probar | **Devuélvele el nombre al tiro**: sin él, cualquiera puede descargar `.env` (con la contraseña de la base). Si estuvo expuesto, cambia la contraseña del usuario MySQL y `APP_CLAVE` |
 | El sitio funciona pero sin datos | Que exista `public_html/panel/config/database.php` y que el `.env` del panel tenga bien la base |
 | «Roomies todavía no recibe avisos» | Falta importar `sql/roomies.sql` (paso 2) |
 | No llega el correo de confirmación | Paso 6; revisa spam; prueba con `roomies.remitente` igual a una casilla que exista |
