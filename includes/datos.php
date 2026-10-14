@@ -27,6 +27,7 @@ const TIPOS_PUBLICOS = [
     'solemne'   => ['etiqueta' => 'Solemne',       'peso' => 1],
     'control'   => ['etiqueta' => 'Control',       'peso' => 1],
     'entrega'   => ['etiqueta' => 'Entrega',       'peso' => 1],
+    'examen'    => ['etiqueta' => 'Examen',        'peso' => 1],
     'otro'      => ['etiqueta' => 'Evento',        'peso' => 1],
 ];
 
@@ -55,6 +56,20 @@ function datos_pdo(): ?PDO
         }
     }
     return $pdo;
+}
+
+/**
+ * Grupo de cada tipo de evento para el calendario y el buscador:
+ * evaluacion (solemnes, controles, exámenes y entregas), actividad, comunidad
+ * (asambleas, marchas y paros).
+ */
+function datos_categoria_evento(string $tipo): string
+{
+    return match ($tipo) {
+        'solemne', 'control', 'examen', 'entrega' => 'evaluacion',
+        'asamblea', 'marcha', 'paro'              => 'comunidad',
+        default                                   => 'actividad',
+    };
 }
 
 /** ¿Hay base de datos con la que trabajar? */
@@ -99,6 +114,13 @@ function datos_instagram(): string
     return ltrim(datos_ajuste('instagram', 'instagram'), '@');
 }
 
+/** Dirección del perfil de Instagram, o '' si no hay cuenta configurada. */
+function datos_url_instagram(): string
+{
+    $cuenta = datos_instagram();
+    return $cuenta !== '' ? 'https://www.instagram.com/' . rawurlencode($cuenta) . '/' : '';
+}
+
 function datos_correo(): string
 {
     return datos_ajuste('correo_contacto', 'correo');
@@ -126,7 +148,8 @@ function datos_tipos_in(): array
 function datos_preparar_evento(array $ev): array
 {
     $tipo = (string) $ev['tipo'];
-    $ev['etiqueta'] = TIPOS_PUBLICOS[$tipo]['etiqueta'] ?? 'Evento';
+    $ev['etiqueta']  = TIPOS_PUBLICOS[$tipo]['etiqueta'] ?? 'Evento';
+    $ev['categoria'] = datos_categoria_evento($tipo);
     $ev['resumen']  = trim((string) ($ev['descripcion'] ?? '')) ?: contenido_resumen_evento($tipo);
     return $ev;
 }
@@ -150,6 +173,19 @@ function datos_eventos(int $limite, ?int $dias = null): array
     $sql .= ' ORDER BY fecha ASC, hora_inicio ASC LIMIT ' . max(1, $limite);
 
     return array_map('datos_preparar_evento', datos_filas($sql, $parametros));
+}
+
+/** Eventos públicos entre dos fechas (incluidas), para el calendario. */
+function datos_eventos_rango(string $desde, string $hasta): array
+{
+    [$marcas, $tipos] = datos_tipos_in();
+    return array_map('datos_preparar_evento', datos_filas(
+        "SELECT id, titulo, descripcion, tipo, fecha, fecha_fin, hora_inicio, hora_fin, lugar, ramo
+           FROM eventos
+          WHERE fecha BETWEEN ? AND ? AND tipo IN ($marcas)
+          ORDER BY fecha ASC, hora_inicio ASC",
+        array_merge([$desde, $hasta], $tipos)
+    ));
 }
 
 /** Un evento público por id (para el archivo .ics). */
@@ -247,8 +283,7 @@ function datos_destacado(): ?array
         return $manual + ['tipo' => 'noticia', 'etiqueta' => 'Noticia', 'resumen' => '', 'enlace' => '', 'enlace_texto' => 'Ver más'];
     }
 
-    $instagram = datos_instagram();
-    $urlInstagram = $instagram !== '' ? 'https://www.instagram.com/' . rawurlencode($instagram) . '/' : '';
+    $urlInstagram = datos_url_instagram();
 
     $desdeEvento = static fn(array $ev, string $etiqueta): array => [
         'tipo'         => 'evento',

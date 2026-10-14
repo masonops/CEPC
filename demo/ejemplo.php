@@ -31,6 +31,25 @@ function demo_pdo(): PDO
             lugar TEXT, cupos INTEGER, inscritos INTEGER, estado TEXT
         );
         CREATE TABLE apuntes (id INTEGER PRIMARY KEY AUTOINCREMENT, ramo TEXT, verificado INTEGER);
+        CREATE TABLE proyectos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, descripcion TEXT, presupuesto REAL,
+            estado TEXT, anio INTEGER
+        );
+        CREATE TABLE movimientos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, tipo TEXT, monto REAL, descripcion TEXT,
+            categoria TEXT, fecha TEXT, proyecto_id INTEGER
+        );
+        CREATE TABLE asambleas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, titulo TEXT, fecha TEXT, hora TEXT, lugar TEXT,
+            quorum_requerido INTEGER, asistentes INTEGER, acta_url TEXT, estado TEXT
+        );
+        CREATE TABLE votaciones (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, titulo TEXT, descripcion TEXT, tipo TEXT,
+            fecha_inicio TEXT, fecha_fin TEXT, estado TEXT, padron INTEGER
+        );
+        CREATE TABLE opciones_votacion (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, votacion_id INTEGER, texto TEXT, votos INTEGER, orden INTEGER
+        );
         CREATE TABLE usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, cargo TEXT, avatar TEXT,
             color TEXT, orden INTEGER, activo INTEGER
@@ -101,6 +120,80 @@ function demo_pdo(): PDO
 
     $ramos = ['MA1001', 'MA1001', 'MA1002', 'MA1101', 'FI1001', 'FI1001', 'QU1000', 'CC1002', 'MA2001', 'MA1102'];
     $insertar($pdo, 'apuntes', ['ramo', 'verificado'], array_map(static fn(string $r): array => [$r, 1], $ramos));
+
+    // Proyectos del año: [nombre, descripción, presupuesto, estado]
+    $anio = (int) date('Y');
+    $proyectos = [
+        ['Semana Novata', 'Bienvenida a la generación que entra: fiesta, feria de organizaciones y kit novato.', 1200000, 'finalizado'],
+        ['Banco de Apuntes digital', 'Digitalización y orden del repositorio de apuntes y solemnes antiguas.', 180000, 'en_curso'],
+        ['Campaña de salud mental', 'Ciclo de charlas y difusión de la red de apoyo psicológico de la facultad.', 350000, 'en_curso'],
+        ['Torneo interno de fútbol', 'Campeonato entre secciones: arriendo de cancha, arbitraje e implementos.', 480000, 'en_curso'],
+        ['Sede CEPC: equipamiento', 'Termoeléctrico, microondas y estantería para la sede.', 340000, 'finalizado'],
+    ];
+    $insertar($pdo, 'proyectos', ['nombre', 'descripcion', 'presupuesto', 'estado', 'anio'], array_map(
+        static fn(array $p): array => [$p[0], $p[1], $p[2], $p[3], $anio],
+        $proyectos
+    ));
+
+    // Movimientos: [tipo, monto, descripción, categoría, hace cuántos días, proyecto (1-5 o null)]
+    $movimientos = [
+        ['ingreso', 1800000, 'Aporte anual de la Escuela de Ingeniería', 'aporte_facultad', 170, null],
+        ['ingreso', 640000, 'Recaudación fiesta de Semana Novata', 'fiesta', 96, 1],
+        ['ingreso', 420000, 'Aporte FECh para actividades de bienestar', 'fecech', 88, 3],
+        ['ingreso', 190000, 'Rifa solidaria de fin de semestre', 'rifa', 55, null],
+        ['ingreso', 310000, 'Auspicio de preuniversitario para el torneo', 'auspicio', 22, 4],
+        ['ingreso', 150000, 'Venta de empanadas en la jornada de septiembre', 'venta', 12, null],
+        ['gasto', 520000, 'Arriendo de sonido e iluminación, Semana Novata', 'arriendo', 97, 1],
+        ['gasto', 240000, 'Impresión de kits y credenciales novatos', 'impresiones', 110, 1],
+        ['gasto', 310000, 'Termoeléctrico, microondas y estantería para la sede', 'mantencion', 42, 5],
+        ['gasto', 145000, 'Fotocopias del banco de apuntes de MA1001 y FI1001', 'impresiones', 50, 2],
+        ['gasto', 98000, 'Coffee break del conversatorio de salud mental', 'alimentacion', 26, 3],
+        ['gasto', 175000, 'Arriendo de cancha, fecha 1 del torneo', 'deportes', 18, 4],
+        ['gasto', 132000, 'Pelotas, petos y silbatos para el torneo', 'deportes', 6, 4],
+        ['gasto', 128000, 'Lienzos y gráfica para la semana de disidencias', 'difusion', 35, null],
+        ['gasto', 82000, 'Cajas de mercadería para apoyo de emergencia', 'bienestar', 11, null],
+        ['gasto', 64000, 'Papelería y materiales para la sede', 'insumos', 15, null],
+        ['gasto', 55000, 'Transporte de materiales a la jornada de septiembre', 'transporte', 9, null],
+        ['gasto', 47000, 'Impresión de afiches de la semana de disidencias', 'difusion', 3, null],
+    ];
+    $insertar($pdo, 'movimientos', ['tipo', 'monto', 'descripcion', 'categoria', 'fecha', 'proyecto_id'], array_map(
+        static fn(array $m): array => [$m[0], $m[1], $m[2], $m[3], max($anio . '-01-02', $dia(-$m[4])), $m[5]],
+        $movimientos
+    ));
+
+    // Asambleas: [título, en cuántos días (negativo = pasada), hora, lugar, quórum, asistentes, estado]
+    $asambleas = [
+        ['Asamblea general de Plan Común', 3, '13:00', 'Auditorio Gorbea', 80, 0, 'convocada'],
+        ['Asamblea extraordinaria por financiamiento', -32, '13:00', 'Auditorio Gorbea', 80, 96, 'realizada'],
+        ['Asamblea general de inicio de semestre', -60, '13:00', 'Auditorio Gorbea', 80, 143, 'realizada'],
+        ['Asamblea de evaluación de la Semana Novata', -75, '13:30', 'Sala B12', 60, 41, 'sin_quorum'],
+    ];
+    $insertar($pdo, 'asambleas', ['titulo', 'fecha', 'hora', 'lugar', 'quorum_requerido', 'asistentes', 'estado', 'acta_url'], array_map(
+        static fn(array $a): array => [$a[0], $dia($a[1]), $a[2], $a[3], $a[4], $a[5], $a[6], null],
+        $asambleas
+    ));
+
+    // Votaciones cerradas con sus resultados.
+    $votaciones = [
+        ['¿Adherimos al paro del día 20?', 'plebiscito', -18, -16, [
+            ['Sí, adherimos con paro de un día', 214], ['Sí, pero sólo con jornada de reflexión', 168],
+            ['No adherimos', 97], ['Abstención', 31],
+        ]],
+        ['Destino del excedente de la Semana Novata', 'plebiscito', -40, -38, [
+            ['Fondo de emergencia para estudiantes', 241], ['Equipamiento de la sede', 186], ['Actividades deportivas', 88],
+        ]],
+    ];
+    foreach ($votaciones as $v) {
+        $insertar($pdo, 'votaciones', ['titulo', 'tipo', 'fecha_inicio', 'fecha_fin', 'estado', 'padron'], [
+            [$v[0], $v[1], $dia($v[2]), $dia($v[3]), 'cerrada', 620],
+        ]);
+        $idVotacion = (int) $pdo->lastInsertId();
+        $insertar($pdo, 'opciones_votacion', ['votacion_id', 'texto', 'votos', 'orden'], array_map(
+            static fn(array $o, int $i): array => [$idVotacion, $o[0], $o[1], $i],
+            $v[4],
+            array_keys($v[4])
+        ));
+    }
 
     $directiva = [
         ['Mari', 'Presidenta'], ['Mikel', 'Vicepresidente'], ['Benja', 'Secretario'],

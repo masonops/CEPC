@@ -63,3 +63,6 @@ if ($SITIO['panel_url'] === '' && $SITIO['panel_raiz'] !== null
 require SITIO_RAIZ . '/includes/utilidades.php';
 require SITIO_RAIZ . '/includes/contenido.php';
 require SITIO_RAIZ . '/includes/datos.php';
+require SITIO_RAIZ . '/includes/datos-transparencia.php';
+require SITIO_RAIZ . '/includes/mapa/mapa.php';
+require SITIO_RAIZ . '/includes/busqueda.php';

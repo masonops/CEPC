@@ -1,0 +1,125 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   inicio/agenda.css — Próximas fechas (carril horizontal).
+   ========================================================================== */
+
+/* Las tarjetas se alinean con el contenedor y se deslizan hasta el borde. */
+.carril {
+  --borde-carril: max(var(--margen), calc((100% - var(--ancho)) / 2));
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(262px, 292px);
+  gap: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--borde-carril);
+  padding: 6px var(--borde-carril) 12px;
+  scrollbar-width: none;
+}
+
+.carril::-webkit-scrollbar {
+  display: none;
+}
+
+.carril:focus-visible {
+  outline-offset: -3px;
+}
+
+.fecha {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 272px;
+  padding: 22px 22px 18px;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-media);
+  background: var(--superficie);
+  box-shadow: var(--sombra-suave);
+  scroll-snap-align: start;
+}
+
+.fecha__cabeza {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.fecha__dia {
+  display: flex;
+  flex-direction: column;
+}
+
+.fecha__numero {
+  font-family: var(--fuente-titulo);
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fecha__mes {
+  margin-top: 4px;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.fecha__cerca {
+  padding: 4px 10px;
+  border-radius: var(--r-pildora);
+  background: var(--azul-tenue);
+  color: var(--azul-texto);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fecha__cerca--pronto {
+  background: var(--azul);
+  color: var(--sobre-azul);
+}
+
+.fecha__tipo {
+  color: var(--lila-texto);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fecha__titulo {
+  flex: 1;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+
+.fecha__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.fecha__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fecha__agregar {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 14px;
+  width: 100%;
+  border-top: 1px solid var(--linea);
+  font-size: 15px;
+  font-weight: 500;
+}

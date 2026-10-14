@@ -1,0 +1,265 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   inicio/portada.css — Banner con el destacado (incluye su versión móvil).
+   ========================================================================== */
+
+.portada {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: clamp(560px, 86svh, 820px);
+  margin-top: calc(var(--barra-alto) * -1);
+  padding: calc(var(--barra-alto) + 40px) 0 88px;
+}
+
+.portada__fondo {
+  position: absolute;
+  inset: -6%;
+  z-index: -2;
+}
+
+.portada__fondo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(22px) saturate(1.35);
+  transform: scale(1.08);
+}
+
+/* Velo para que el texto se lea, con un toque de los colores del logo y
+   un degradado final que funde el banner con el resto de la página. */
+.portada::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, transparent 58%, var(--fondo) 100%),
+    radial-gradient(55% 60% at 88% 18%, color-mix(in srgb, var(--marca-lila) 24%, transparent), transparent 70%),
+    radial-gradient(50% 55% at 8% 80%, color-mix(in srgb, var(--marca-azul) 12%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--velo-1) 0%, var(--velo-2) 70%);
+}
+
+.portada__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.75fr);
+  align-items: center;
+  gap: 56px;
+}
+
+.portada__texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.pildora {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 12px;
+  border: 1px solid var(--vidrio-borde);
+  border-radius: var(--r-pildora);
+  background: var(--vidrio-fondo);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  color: var(--azul-texto);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.portada__titulo {
+  max-width: 17ch;
+  font-family: var(--fuente-titulo);
+  font-size: clamp(2.5rem, 1.35rem + 3.7vw, 4.4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.portada__resumen {
+  max-width: 40ch;
+  color: var(--texto-2);
+  font-size: clamp(1.125rem, 1rem + 0.45vw, 1.375rem);
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.portada__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* Vidrio esmerilado (aproximación web, ver nota al inicio). */
+.vidrio {
+  position: relative;
+  border: 1px solid var(--vidrio-borde);
+  border-radius: var(--r-grande);
+  background: var(--vidrio-fondo);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: inset 0 1px 0 var(--vidrio-brillo), var(--sombra-flotante);
+}
+
+.portada__tarjeta {
+  justify-self: end;
+  width: 100%;
+  max-width: 340px;
+  padding: 28px;
+}
+
+.portada__tarjeta--logo {
+  display: grid;
+  place-items: center;
+  padding: 40px;
+}
+
+.portada__tarjeta--logo img {
+  width: 100%;
+  max-width: 220px;
+}
+
+.calendario {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.calendario__semana {
+  color: var(--azul-texto);
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.calendario__dia {
+  margin: 2px 0 4px;
+  font-family: var(--fuente-titulo);
+  font-size: 104px;
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.calendario__mes {
+  color: var(--texto-2);
+  font-size: 17px;
+  text-transform: capitalize;
+}
+
+.datos {
+  display: grid;
+  gap: 12px;
+  padding-top: 20px;
+  font-size: 15px;
+}
+
+.datos > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.datos dt {
+  display: flex;
+  padding-top: 2px;
+  color: var(--texto-2);
+}
+
+.datos dd {
+  color: var(--texto);
+}
+
+/* Entrada del banner. */
+@media (prefers-reduced-motion: no-preference) {
+  .portada__texto > *,
+  .portada__tarjeta {
+    animation: subir 0.9s var(--ease) both;
+  }
+
+  .portada__texto > :nth-child(2) { animation-delay: 0.06s; }
+  .portada__texto > :nth-child(3) { animation-delay: 0.12s; }
+  .portada__texto > :nth-child(4) { animation-delay: 0.18s; }
+  .portada__tarjeta { animation-delay: 0.22s; }
+
+  .portada__fondo img {
+    animation: enfocar 1.6s var(--ease) both;
+  }
+}
+
+@keyframes subir {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes enfocar {
+  from { opacity: 0; transform: scale(1.16); }
+  to   { opacity: 1; transform: scale(1.08); }
+}
+
+/* ==========================================================================
+   Responsivo: banner
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .portada {
+    min-height: 0;
+    padding: calc(var(--barra-alto) + 28px) 0 56px;
+  }
+
+  .portada__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .portada__tarjeta {
+    justify-self: stretch;
+    max-width: none;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    padding: 22px 24px;
+  }
+
+  .portada__tarjeta--logo {
+    display: none;
+  }
+
+  .calendario {
+    padding: 0 24px 0 0;
+    border-bottom: 0;
+    border-right: 1px solid var(--linea);
+  }
+
+  .calendario__dia {
+    font-size: 64px;
+  }
+
+  .datos {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .portada__acciones {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .seccion__cabecera--fila .paletas {
+    display: none;
+  }
+}

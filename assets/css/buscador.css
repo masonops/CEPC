@@ -1,0 +1,307 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   buscador.css — Botón «Buscar» de la barra, ventana tipo Spotlight y la
+   lista de resultados (también la usa buscar.php).
+   ========================================================================== */
+
+/* --- Botón de la barra -------------------------------------------------- */
+
+.buscar-pildora {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  margin-right: 6px;
+  padding: 0 8px 0 12px;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-pildora);
+  background: color-mix(in srgb, var(--superficie) 70%, transparent);
+  color: var(--texto-2);
+  font-size: 14px;
+  transition: border-color 0.2s var(--ease-suave), color 0.2s var(--ease-suave);
+}
+
+.buscar-pildora:hover {
+  border-color: var(--linea-fuerte);
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.buscar-pildora .icono {
+  width: 16px;
+  height: 16px;
+}
+
+.buscar-pildora__texto {
+  min-width: 96px;
+}
+
+.buscar-pildora__atajo {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  color: var(--texto-3);
+  font: inherit;
+  font-size: 12px;
+}
+
+@media (max-width: 1080px) {
+  .buscar-pildora__texto,
+  .buscar-pildora__atajo {
+    display: none;
+  }
+
+  .buscar-pildora {
+    width: 40px;
+    height: 40px;
+    margin-right: 0;
+    justify-content: center;
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    color: var(--texto);
+  }
+
+  .buscar-pildora .icono {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* --- Ventana --------------------------------------------------------------- */
+
+.buscador {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: max(10vh, 64px) var(--margen) 24px;
+}
+
+.buscador[hidden] {
+  display: none;
+}
+
+.buscador-abierto {
+  overflow: hidden;
+}
+
+.buscador__fondo {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--fondo) 55%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+}
+
+.buscador__ventana {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 640px;
+  max-height: min(70vh, 640px);
+  overflow: hidden;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-media);
+  background: var(--superficie);
+  box-shadow: var(--sombra-flotante), 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .buscador:not([hidden]) .buscador__ventana {
+    animation: buscador-entrar 0.28s var(--ease) both;
+  }
+
+  @keyframes buscador-entrar {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+.buscador__campo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 14px 18px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.buscador__campo > .icono {
+  width: 22px;
+  height: 22px;
+  color: var(--texto-2);
+}
+
+.buscador__campo input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 20px;
+  letter-spacing: -0.015em;
+  outline: none;
+}
+
+.buscador__campo input::placeholder {
+  color: var(--texto-3);
+}
+
+.buscador__campo input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.buscador__cerrar {
+  padding: 4px 8px;
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.buscador__resultados {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.buscador__resultados:not(:empty) {
+  padding: 6px 8px 10px;
+}
+
+.buscador__ayuda {
+  padding: 16px 18px 18px;
+  color: var(--texto-2);
+  font-size: 15px;
+}
+
+.buscador__ayuda button {
+  padding: 2px 8px;
+  border: 0;
+  border-radius: var(--r-pildora);
+  background: var(--azul-tenue);
+  color: var(--azul-texto);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* --- Resultados (ventana y página buscar) ------------------------------- */
+
+.resultado-grupo + .resultado-grupo {
+  margin-top: 6px;
+}
+
+.resultado-grupo__titulo {
+  padding: 10px 10px 4px;
+  color: var(--texto-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.resultado {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  color: var(--texto);
+}
+
+.resultado:hover,
+.resultado[aria-selected='true'] {
+  background: var(--azul-tenue);
+  text-decoration: none;
+}
+
+.resultado__icono {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--fondo-2);
+  color: var(--texto-2);
+}
+
+:root[data-tema='oscuro'] .resultado__icono {
+  background: var(--superficie-hover);
+}
+
+.resultado__icono .icono {
+  width: 18px;
+  height: 18px;
+}
+
+.resultado[aria-selected='true'] .resultado__icono {
+  background: var(--azul);
+  color: var(--sobre-azul);
+}
+
+.resultado__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.resultado__texto strong {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultado__texto mark {
+  background: none;
+  color: var(--azul-texto);
+}
+
+.resultado__texto span {
+  overflow: hidden;
+  color: var(--texto-2);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultado__externo {
+  color: var(--texto-3);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.resultado-vacio {
+  padding: 18px 10px;
+  color: var(--texto-2);
+}
+
+@media (max-width: 640px) {
+  .buscador {
+    padding: 0;
+  }
+
+  .buscador__ventana {
+    max-width: none;
+    max-height: none;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .buscador__campo {
+    padding-top: max(14px, env(safe-area-inset-top));
+  }
+}

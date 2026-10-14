@@ -1,12 +1,44 @@
 # Sitio público · CEPC
 
-La página que ven los estudiantes de Plan Común. Es informativa y tranquila:
-un banner con lo más importante del momento, las próximas fechas, los
-recursos de ayuda, lo último de Instagram, quiénes somos y preguntas
-frecuentes.
+El sitio que ven los estudiantes de Plan Común. Informativo y tranquilo,
+con estas páginas:
+
+| Página | Qué tiene |
+|---|---|
+| `index.php` | Portada: banner con lo más importante, próximas fechas, recursos, novedades, cuentas claras, quiénes somos y preguntas frecuentes |
+| `calendario.php` | Mes completo con solemnes, controles, entregas, actividades y asambleas; filtros y detalle por día |
+| `mapa.php` | Mapa interactivo de Beauchef 850 y 851: edificios, pisos y salas, rutas desde la entrada y dónde comer |
+| `calculadora.php` | Cuánto necesitas en lo que queda para aprobar (4,0) o ir a segunda (3,7) |
+| `transparencia.php` | Rendición de cuentas, proyectos, asambleas, votaciones y documentos |
+| `buscar.php` | Resultados del buscador (la barra tiene un buscador tipo Spotlight: tecla `/` o Ctrl/⌘ + K) |
 
 PHP 8 sin frameworks, igual que el panel. Modo claro por defecto y botón
 para modo oscuro (se recuerda en el navegador de cada persona).
+
+---
+
+## Cómo está ordenado
+
+**Cada sección es un archivo aparte**, para poder cambiar una sin tocar las
+demás:
+
+```
+index.php, calendario.php, …        cada página sólo junta sus secciones
+includes/secciones/inicio/          una sección de la portada por archivo
+includes/secciones/calendario/      (mes.php, lista.php)
+includes/secciones/mapa/            (lienzo.php, panel.php)
+includes/secciones/calculadora/     (calculadora.php, explicacion.php)
+includes/secciones/transparencia/   (resumen, movimientos, proyectos, asambleas, votaciones, documentos)
+includes/partes/                    encabezado, pie, buscador y título de página
+includes/mapa/                      datos del mapa (ver más abajo)
+assets/css/base.css                 colores, tipografía, botones, barra y pie
+assets/css/inicio/*.css             un estilo por sección de la portada
+assets/css/<página>.css             el estilo de cada página
+assets/js/<página>.js               la interacción de cada página
+```
+
+Para cambiar el orden de la portada o quitar una sección, edita la lista
+`$secciones` de `index.php`.
 
 ---
 
@@ -72,7 +104,8 @@ public_html/
 ```
 
 1. Sube el contenido de este repositorio a `public_html/` (las carpetas
-   `.github/`, `demo/` y `herramientas/` no hacen falta en el servidor).
+   `.github/`, `demo/`, `herramientas/` y `referencias/` no hacen falta en
+   el servidor; si las subes, el `.htaccess` las bloquea).
 2. Sube `cepc-panel/` a `public_html/panel/` (con su `.env`, como dice su README).
 3. Listo: el sitio detecta `./panel` solo y muestra el enlace «Acceso
    directiva» en el pie.
@@ -92,6 +125,8 @@ Si el panel vive en otra carpeta, indícala en `config.php` → `panel_ruta`
 | **Tutorías** | Panel → *Docencia → Tutorías* | Las abiertas y futuras, con cupos libres. Sin datos de contacto del tutor. |
 | **Novedades** | Panel → *Comunicaciones* | Publicaciones de Instagram en estado «Publicado» con fecha de hoy o anterior. |
 | **Directiva** | Panel → *Mi perfil* | Nombre, cargo y foto. Nada de correos ni teléfonos. |
+| **Calendario y buscador** | Panel → *Calendario* | Los mismos tipos públicos que la agenda. |
+| **Transparencia** | Panel → *Finanzas* y *Secretaría* | Movimientos (sin quién los registró), proyectos con su gasto, asambleas con asistencia y acta, y votaciones **cerradas**. Nunca los reembolsos a personas. |
 | **Textos fijos y preguntas** | `includes/contenido.php` | |
 | **Instagram y correo** | Tabla `configuracion` del panel, o `config.php` | |
 
@@ -122,14 +157,48 @@ la agenda tiene el mismo botón.
 | Fijar una noticia en el banner | `includes/contenido.php` → `contenido_destacado_manual()` |
 | Cambiar las preguntas frecuentes o los textos de las tarjetas | `includes/contenido.php` |
 | Cambiar qué tipos de evento son públicos o cuánto pesan | `includes/datos.php` → `TIPOS_PUBLICOS` |
-| Cambiar colores, tipografía o espacios | `assets/css/sitio.css` (tokens al inicio) |
+| Cambiar colores, tipografía o espacios | `assets/css/base.css` (tokens al inicio) |
+| Cambiar una sección de la portada | `includes/secciones/inicio/<sección>.php` y `assets/css/inicio/<sección>.css` |
+| Agregar algo al buscador | `includes/busqueda.php` (una función `busqueda_*()` nueva) |
+| Cambiar dónde lleva un ramo (U-Campus) | `config.php` → `ucampus_ramo_url` |
+| Cambiar las plantillas de la calculadora | `includes/secciones/calculadora/calculadora.php` → `$plantillasNotas` |
+| Subir estatutos, reglamentos o actas | `includes/contenido.php` → `contenido_documentos()` |
+| Cargar salas y pisos reales | `includes/mapa/edificios.php` |
+| Cargar lugares para comer | `includes/mapa/lugares.php` |
+| Agregar un camino para las rutas | `includes/mapa/rutas.php` |
 | Cambiar la foto del banner | `assets/img/fondo-beauchef.jpg` (se difumina sola) |
 | Cambiar los datos de ejemplo de GitHub Pages | `demo/ejemplo.php` |
 | Agregar un ícono | Descargar el SVG de [Phosphor](https://phosphoricons.com) (estilo *regular*) a `assets/iconos/` y usar `icono('nombre')` |
 
 ---
 
-## 5. Diseño
+## 5. El mapa
+
+Los datos del mapa están en `includes/mapa/`, separados para que sea fácil
+completarlos:
+
+| Archivo | Qué tiene | ¿Se edita a mano? |
+|---|---|---|
+| `geometria.php` | La forma de cada edificio, calcada del plano | No: la genera `herramientas/trazar-mapa.py` |
+| `edificios.php` | Nombre, descripción, servicios, pisos y salas | **Sí** |
+| `rutas.php` | Red de caminos (nodos y uniones) para calcular rutas | Sí, para sumar atajos |
+| `lugares.php` | Dónde comer: posición, etiquetas (vegano, Junaeb…) y horario | **Sí** |
+
+- **Orientación:** norte arriba. Beauchef 851 a la izquierda y 850 a la
+  derecha (el plano original de `referencias/mapas/` estaba girado; el script
+  lo gira 90° a la derecha).
+- **Coordenadas:** abre `mapa.php?coordenadas=1` para ver una cuadrícula y
+  la posición del mouse; así se ubican lugares y nodos nuevos.
+- **Pendiente:** las **salas y pisos son de ejemplo** (el plano no trae
+  subterráneos ni pisos altos) y los **lugares de afuera** también. Mientras
+  `MAPA_SALAS_DE_EJEMPLO` sea `true` y los lugares tengan `'ejemplo' => true`,
+  el mapa lo avisa.
+- **Distancias:** se calculan con una escala estimada (`metros_por_unidad`
+  en `rutas.php`); por eso dicen «≈».
+
+---
+
+## 6. Diseño
 
 - **Colores del logo.** El azul `#004AAD` es el único color de acción
   (botones y enlaces). El lila `#B88ED6` es decorativo: etiquetas de tipo de
@@ -141,12 +210,15 @@ la agenda tiene el mismo botón.
   tarjetas de la agenda 22px; piezas internas 14px.
 - **Movimiento.** Entrada suave del banner y aparición de secciones al bajar.
   Todo se apaga si el sistema tiene activado «Reducir movimiento».
+- **Gráficos y calendario.** Los colores de las barras y de los grupos del
+  calendario se validaron para daltonismo y contraste en ambos modos. El
+  color nunca va solo: siempre lo acompaña texto o un ícono.
 - **Vidrio esmerilado.** Es una aproximación con `backdrop-filter`; si el
   sistema pide «Reducir transparencia», se usan fondos sólidos.
 
 ---
 
-## 6. Créditos
+## 7. Créditos
 
 - Foto de Beauchef 851: [Carlos yo](https://commons.wikimedia.org/wiki/File:Beauchef_851,_FCFM_Universidad_de_Chile,_Santiago_20231215.jpg),
   licencia [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.es),

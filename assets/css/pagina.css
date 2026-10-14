@@ -1,0 +1,116 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   pagina.css — Lo común de las páginas interiores: el título grande de
+   arriba y los avisos de «datos de ejemplo».
+   ========================================================================== */
+
+.cabecera-pagina {
+  padding: clamp(28px, 4vw, 48px) 0 clamp(8px, 1.5vw, 16px);
+  background:
+    radial-gradient(60% 120% at 100% 0%, color-mix(in srgb, var(--marca-lila) 16%, transparent), transparent 70%),
+    radial-gradient(50% 120% at 0% 0%, color-mix(in srgb, var(--marca-azul) 8%, transparent), transparent 70%);
+}
+
+.cabecera-pagina__icono {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 14px;
+  border-radius: var(--r-chica);
+  background: var(--superficie);
+  color: var(--azul-texto);
+  box-shadow: var(--sombra-suave);
+}
+
+.cabecera-pagina__icono .icono {
+  width: 24px;
+  height: 24px;
+}
+
+.cabecera-pagina__titulo {
+  font-family: var(--fuente-titulo);
+  font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.cabecera-pagina__bajada {
+  max-width: 56ch;
+  margin-top: 10px;
+  color: var(--texto-2);
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.4;
+}
+
+/* Aviso discreto para datos que todavía son de ejemplo. */
+.aviso-ejemplo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--r-chica);
+  background: var(--lila-suave);
+  color: var(--lila-texto);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.aviso-ejemplo .icono {
+  margin-top: 1px;
+}
+
+/* Botones segmentados (filtros tipo Apple). */
+.segmentos {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--r-pildora);
+  background: var(--fondo-2);
+}
+
+:root[data-tema='oscuro'] .segmentos {
+  background: var(--superficie);
+}
+
+.segmentos::-webkit-scrollbar {
+  display: none;
+}
+
+.segmentos button {
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--r-pildora);
+  background: transparent;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-suave), color 0.2s var(--ease-suave);
+}
+
+.segmentos button:hover {
+  color: var(--texto);
+}
+
+.segmentos button[aria-pressed='true'] {
+  background: var(--superficie);
+  color: var(--texto);
+  box-shadow: var(--sombra-suave);
+}
+
+:root[data-tema='oscuro'] .segmentos button[aria-pressed='true'] {
+  background: var(--superficie-hover);
+}

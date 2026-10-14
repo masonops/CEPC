@@ -1,0 +1,114 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   inicio/transparencia.css — «Cuentas claras»: balance del año y accesos a
+   la página de transparencia.
+   ========================================================================== */
+
+.cuentas {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: center;
+  gap: 32px clamp(40px, 6vw, 88px);
+}
+
+.cuentas__vacio {
+  margin-top: 24px;
+  color: var(--texto-2);
+}
+
+/* Cifras del año: número grande y etiqueta chica, sin tarjetas. */
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, auto));
+  justify-content: start;
+  gap: 8px 36px;
+  margin-top: 28px;
+}
+
+.cifras dt {
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.cifras dd {
+  margin-top: 2px;
+  font-family: var(--fuente-titulo);
+  font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* Accesos: lista de filas grandes, separadas por una línea. */
+.accesos li + li {
+  border-top: 1px solid var(--linea);
+}
+
+.acceso {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 4px;
+  color: var(--texto);
+}
+
+.acceso:hover {
+  text-decoration: none;
+}
+
+.acceso__icono {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-chica);
+  background: var(--azul-tenue);
+  color: var(--azul-texto);
+}
+
+.acceso__icono .icono {
+  width: 22px;
+  height: 22px;
+}
+
+.acceso__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.acceso__texto strong {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.acceso__texto span {
+  color: var(--texto-2);
+  font-size: 15px;
+}
+
+.acceso__flecha {
+  color: var(--texto-3);
+  transition: transform 0.25s var(--ease), color 0.2s var(--ease-suave);
+}
+
+.acceso:hover .acceso__flecha {
+  color: var(--azul-texto);
+  transform: translateX(3px);
+}
+
+@media (max-width: 900px) {
+  .cuentas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .cifras {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}

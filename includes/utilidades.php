@@ -45,6 +45,18 @@ function icono(string $nombre, string $clase = ''): string
 }
 
 /**
+ * Enlace a una página del sitio: «calendario.php» en el servidor y
+ * «calendario.html» en la versión estática. 'inicio' es la portada.
+ */
+function pagina(string $nombre, string $ancla = ''): string
+{
+    $archivo = $nombre === 'inicio'
+        ? (sitio('estatico', false) ? 'index.html' : './')
+        : $nombre . (sitio('estatico', false) ? '.html' : '.php');
+    return $archivo . ($ancla !== '' ? '#' . $ancla : '');
+}
+
+/**
  * Enlace para agregar un evento al calendario: ics.php en el servidor, o
  * el .ics ya generado en la versión estática.
  */

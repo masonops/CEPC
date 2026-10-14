@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/includes/arranque.php';
+require_once __DIR__ . '/includes/arranque.php';
 require __DIR__ . '/includes/ics.php';
 
 $id     = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?: 0;

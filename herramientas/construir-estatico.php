@@ -38,19 +38,38 @@ function copiar_carpeta(string $origen, string $destino): void
     }
 }
 
-// La página: se ejecuta index.php y se guarda lo que imprime.
-ob_start();
-require $raiz . '/index.php';
-$html = (string) ob_get_clean();
-
-if (!str_contains($html, 'aviso-demo')) {
-    fwrite(STDERR, "La página no salió en modo vista previa; revisa includes/arranque.php.\n");
-    exit(1);
+/** Ejecuta una página PHP y devuelve el HTML que imprime. */
+function construir_pagina(string $archivo): string
+{
+    // Cada página se arma en su propio ámbito, como si fuera una visita.
+    $_GET = [];
+    ob_start();
+    (static function (string $archivo): void {
+        require $archivo;
+    })($archivo);
+    return (string) ob_get_clean();
 }
 
+// Arranque (configuración, datos de ejemplo) una sola vez para todas las páginas.
+require $raiz . '/includes/arranque.php';
+
 copiar_carpeta($raiz . '/assets', $salida . '/assets');
-file_put_contents($salida . '/index.html', $html);
 file_put_contents($salida . '/.nojekyll', '');
+
+$paginas = ['index', 'calendario', 'mapa', 'calculadora', 'transparencia', 'buscar'];
+foreach ($paginas as $nombre) {
+    $archivo = $raiz . '/' . $nombre . '.php';
+    if (!is_file($archivo)) {
+        continue;
+    }
+    $html = construir_pagina($archivo);
+    if (!str_contains($html, 'aviso-demo')) {
+        fwrite(STDERR, "$nombre.php no salió en modo vista previa; revisa includes/arranque.php.\n");
+        exit(1);
+    }
+    file_put_contents($salida . '/' . $nombre . '.html', $html);
+    echo "  $nombre.html\n";
+}
 
 // Un .ics por cada fecha que aparece en la página.
 require_once $raiz . '/includes/ics.php';
@@ -62,4 +81,4 @@ foreach (datos_eventos(100) as $evento) {
     $total++;
 }
 
-echo "Listo: $salida/index.html y $total archivos .ics\n";
+echo "Listo: $salida (" . count($paginas) . " páginas y $total archivos .ics)\n";

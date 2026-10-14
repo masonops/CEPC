@@ -1,12 +1,15 @@
 <?php
 /**
  * CEPC · Sitio público
- * includes/partes/pie.php — Contacto, créditos y cierre del documento.
- *
- * Usa $instagram, $urlInstagram y $correo definidos por la página.
+ * includes/partes/pie.php — Contacto, créditos, el buscador y el cierre del
+ * documento. Común a todas las páginas.
  */
 
 declare(strict_types=1);
+
+$instagram    = datos_instagram();
+$urlInstagram = datos_url_instagram();
+$correo       = datos_correo();
 ?>
 <footer class="pie" id="contacto">
   <div class="contenedor pie__grid">
@@ -30,11 +33,13 @@ declare(strict_types=1);
     </div>
 
     <div class="pie__columna">
-      <h2>En esta página</h2>
+      <h2>Sitio</h2>
       <ul>
-        <li><a href="#agenda">Próximas fechas</a></li>
-        <li><a href="#ayuda">Recursos y apoyo</a></li>
-        <li><a href="#preguntas">Preguntas frecuentes</a></li>
+        <li><a href="<?= esc(pagina('calendario')) ?>">Calendario</a></li>
+        <li><a href="<?= esc(pagina('mapa')) ?>">Mapa del campus</a></li>
+        <li><a href="<?= esc(pagina('calculadora')) ?>">Calculadora de notas</a></li>
+        <li><a href="<?= esc(pagina('transparencia')) ?>">Transparencia</a></li>
+        <li><a href="<?= esc(pagina('inicio', 'preguntas')) ?>">Preguntas frecuentes</a></li>
       </ul>
     </div>
   </div>
@@ -50,6 +55,8 @@ declare(strict_types=1);
     <?php endif; ?>
   </div>
 </footer>
+
+<?php require SITIO_RAIZ . '/includes/partes/buscador.php'; ?>
 
 </body>
 </html>

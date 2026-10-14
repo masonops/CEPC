@@ -29,6 +29,10 @@ return [
     // Si se deja vacío, la tarjeta de apuntes no muestra el botón.
     'banco_apuntes_url' => '',
 
+    // Dónde ver horarios, secciones y profesores de un ramo. {codigo} se
+    // reemplaza por el código (MA1001). Ajústalo al buscador real de U-Campus.
+    'ucampus_ramo_url'  => 'https://ucampus.uchile.cl/m/fcfm_catalogo/',
+
     /* --- Conexión con el panel ----------------------------------------- */
     // Carpeta donde vive el panel en el servidor. Vacío = se busca solo en
     // ./panel (como se sube a SparkedHost) y en ../cepc-panel (este repo).

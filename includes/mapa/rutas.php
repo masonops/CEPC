@@ -1,0 +1,130 @@
+<?php
+/**
+ * CEPC · Sitio público
+ * includes/mapa/rutas.php — Red de caminos para las rutas del mapa.
+ *
+ * Cada nodo es un punto [x, y] en coordenadas del mapa (activa la cuadrícula
+ * con mapa.php?coordenadas=1 para leerlas). Tipos:
+ *   'entrada'  puede ser punto de partida («Desde…»)
+ *   'puerta'   puerta de un edificio: las rutas llegan aquí
+ *   'paso'     punto intermedio de un pasillo o patio
+ *
+ * Las aristas unen dos nodos por los que se puede caminar; el largo se
+ * calcula solo. Para sumar un atajo, agrega un par a 'aristas'.
+ */
+
+declare(strict_types=1);
+
+return [
+    // Metros por unidad del mapa: ESTIMADO (850 mide unos 300 m de Beauchef a
+    // Plaza Ercilla). Se usa sólo para el «≈ N min caminando».
+    'metros_por_unidad' => 0.38,
+
+    'nodos' => [
+        'acceso-850' => ['x' => 234, 'y' => 420, 'tipo' => 'entrada', 'nombre' => 'Acceso Beauchef 850'],
+        'acceso-851' => ['x' => 197, 'y' => 420, 'tipo' => 'entrada', 'nombre' => 'Acceso Beauchef 851'],
+        'ercilla-norte' => ['x' => 1031, 'y' => 275, 'tipo' => 'entrada', 'nombre' => 'Plaza Ercilla (Geología)'],
+        'ercilla-centro' => ['x' => 1031, 'y' => 415, 'tipo' => 'entrada', 'nombre' => 'Plaza Ercilla (Anexo IDIEM)'],
+        'ercilla-sur' => ['x' => 1031, 'y' => 550, 'tipo' => 'entrada', 'nombre' => 'Plaza Ercilla (IDIEM)'],
+        'blanco-encalada-oriente' => ['x' => 724, 'y' => 188, 'tipo' => 'entrada', 'nombre' => 'Blanco Encalada (Ing. Civil)'],
+        'blanco-encalada-poniente' => ['x' => 514, 'y' => 188, 'tipo' => 'entrada', 'nombre' => 'Blanco Encalada (Física)'],
+        'tupper-oriente' => ['x' => 684, 'y' => 647, 'tipo' => 'entrada', 'nombre' => 'Tupper (Ing. Eléctrica)'],
+        'tupper-poniente' => ['x' => 514, 'y' => 647, 'tipo' => 'entrada', 'nombre' => 'Tupper (Minas)'],
+        'p-escuela' => ['x' => 319, 'y' => 420, 'tipo' => 'puerta', 'edificio' => 'escuela'],
+        'p-biblioteca' => ['x' => 329, 'y' => 284, 'tipo' => 'puerta', 'edificio' => 'biblioteca'],
+        'p-hall-sur' => ['x' => 329, 'y' => 550, 'tipo' => 'puerta', 'edificio' => 'hall-sur'],
+        'p-cafeteria' => ['x' => 407, 'y' => 420, 'tipo' => 'puerta', 'edificio' => 'cafeteria'],
+        'p-cancha' => ['x' => 433, 'y' => 417, 'tipo' => 'puerta', 'edificio' => 'cancha'],
+        'p-fisica' => ['x' => 519, 'y' => 356, 'tipo' => 'puerta', 'edificio' => 'fisica'],
+        'p-minas' => ['x' => 519, 'y' => 482, 'tipo' => 'puerta', 'edificio' => 'minas'],
+        'p-torre' => ['x' => 545, 'y' => 420, 'tipo' => 'puerta', 'edificio' => 'torre-central'],
+        'p-civil' => ['x' => 639, 'y' => 350, 'tipo' => 'puerta', 'edificio' => 'civil'],
+        'p-electrica' => ['x' => 625, 'y' => 510, 'tipo' => 'puerta', 'edificio' => 'electrica'],
+        'p-geologia' => ['x' => 825, 'y' => 340, 'tipo' => 'puerta', 'edificio' => 'geologia'],
+        'p-anexo' => ['x' => 967, 'y' => 415, 'tipo' => 'puerta', 'edificio' => 'anexo-idiem'],
+        'p-idiem' => ['x' => 763, 'y' => 432, 'tipo' => 'puerta', 'edificio' => 'idiem'],
+        'p-casino' => ['x' => 344, 'y' => 112, 'tipo' => 'puerta', 'edificio' => 'casino'],
+        'p-851-oriente' => ['x' => 167, 'y' => 420, 'tipo' => 'puerta', 'edificio' => 'b851-oriente'],
+        'p-851-norte' => ['x' => 116, 'y' => 242, 'tipo' => 'puerta', 'edificio' => 'b851-norte'],
+        'p-851-poniente' => ['x' => 64, 'y' => 410, 'tipo' => 'puerta', 'edificio' => 'b851-poniente'],
+        'p-etigny' => ['x' => 116, 'y' => 586, 'tipo' => 'puerta', 'edificio' => 'etigny'],
+        'escuela-norte-1' => ['x' => 382, 'y' => 325, 'tipo' => 'paso'],
+        'escuela-norte-2' => ['x' => 382, 'y' => 518, 'tipo' => 'paso'],
+        'patio-so' => ['x' => 411, 'y' => 360, 'tipo' => 'paso'],
+        'patio-se' => ['x' => 411, 'y' => 475, 'tipo' => 'paso'],
+        'patio-centro-sur' => ['x' => 411, 'y' => 420, 'tipo' => 'paso'],
+        'patio-o' => ['x' => 519, 'y' => 360, 'tipo' => 'paso'],
+        'patio-e' => ['x' => 519, 'y' => 475, 'tipo' => 'paso'],
+        'patio-centro' => ['x' => 519, 'y' => 420, 'tipo' => 'paso'],
+        'patio-no' => ['x' => 624, 'y' => 360, 'tipo' => 'paso'],
+        'patio-ne' => ['x' => 624, 'y' => 475, 'tipo' => 'paso'],
+        'torre-norte' => ['x' => 637, 'y' => 420, 'tipo' => 'paso'],
+        'eje-norte' => ['x' => 749, 'y' => 420, 'tipo' => 'paso'],
+        'eje-geologia' => ['x' => 794, 'y' => 385, 'tipo' => 'paso'],
+        'eje-anexo' => ['x' => 899, 'y' => 415, 'tipo' => 'paso'],
+        'biblioteca-norte' => ['x' => 344, 'y' => 260, 'tipo' => 'paso'],
+        'blanco-encalada-casino' => ['x' => 344, 'y' => 188, 'tipo' => 'paso'],
+        'civil-norte' => ['x' => 724, 'y' => 253, 'tipo' => 'paso'],
+        'fisica-norte' => ['x' => 514, 'y' => 237, 'tipo' => 'paso'],
+        'electrica-sur' => ['x' => 684, 'y' => 600, 'tipo' => 'paso'],
+        'minas-sur' => ['x' => 514, 'y' => 600, 'tipo' => 'paso'],
+        'geologia-oriente' => ['x' => 979, 'y' => 275, 'tipo' => 'paso'],
+        'idiem-oriente' => ['x' => 979, 'y' => 550, 'tipo' => 'paso'],
+        'patio-851' => ['x' => 116, 'y' => 410, 'tipo' => 'paso'],
+    ],
+
+    'aristas' => [
+        ['acceso-850', 'p-escuela'],
+        ['acceso-850', 'acceso-851'],
+        ['acceso-851', 'p-851-oriente'],
+        ['p-851-oriente', 'patio-851'],
+        ['patio-851', 'p-851-norte'],
+        ['patio-851', 'p-851-poniente'],
+        ['patio-851', 'p-etigny'],
+        ['p-escuela', 'p-biblioteca'],
+        ['p-escuela', 'p-hall-sur'],
+        ['p-escuela', 'escuela-norte-1'],
+        ['p-escuela', 'escuela-norte-2'],
+        ['escuela-norte-1', 'patio-so'],
+        ['escuela-norte-2', 'patio-se'],
+        ['patio-so', 'patio-centro-sur'],
+        ['patio-centro-sur', 'patio-se'],
+        ['patio-centro-sur', 'p-cafeteria'],
+        ['patio-centro-sur', 'p-cancha'],
+        ['patio-so', 'patio-o'],
+        ['patio-se', 'patio-e'],
+        ['patio-o', 'p-fisica'],
+        ['patio-e', 'p-minas'],
+        ['patio-o', 'patio-centro'],
+        ['patio-centro', 'patio-e'],
+        ['patio-centro', 'p-torre'],
+        ['patio-o', 'patio-no'],
+        ['patio-e', 'patio-ne'],
+        ['patio-no', 'p-civil'],
+        ['patio-ne', 'p-electrica'],
+        ['patio-no', 'torre-norte'],
+        ['torre-norte', 'patio-ne'],
+        ['torre-norte', 'eje-norte'],
+        ['eje-norte', 'p-idiem'],
+        ['eje-norte', 'eje-geologia'],
+        ['eje-geologia', 'p-geologia'],
+        ['eje-norte', 'eje-anexo'],
+        ['eje-anexo', 'p-anexo'],
+        ['p-biblioteca', 'biblioteca-norte'],
+        ['biblioteca-norte', 'blanco-encalada-casino'],
+        ['blanco-encalada-casino', 'p-casino'],
+        ['blanco-encalada-oriente', 'civil-norte'],
+        ['civil-norte', 'p-civil'],
+        ['blanco-encalada-poniente', 'fisica-norte'],
+        ['fisica-norte', 'p-fisica'],
+        ['tupper-oriente', 'electrica-sur'],
+        ['electrica-sur', 'p-electrica'],
+        ['tupper-poniente', 'minas-sur'],
+        ['minas-sur', 'p-minas'],
+        ['ercilla-norte', 'geologia-oriente'],
+        ['geologia-oriente', 'p-geologia'],
+        ['ercilla-centro', 'p-anexo'],
+        ['ercilla-sur', 'idiem-oriente'],
+        ['idiem-oriente', 'p-idiem'],
+    ],
+];

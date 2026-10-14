@@ -1,0 +1,469 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   calendario.css — Página del calendario: mes, filtros, detalle del día y
+   la lista «Lo que viene».
+
+   Colores de los grupos: tres tonos validados para daltonismo y contraste
+   en ambos modos (validador de la guía de visualización de datos). El
+   texto nunca va del color del grupo: el color está en el punto o la barra.
+   ========================================================================== */
+
+:root,
+:root[data-tema='claro'] {
+  --grupo-evaluacion: #2a78d6;
+  --grupo-actividad: #eb6834;
+  --grupo-comunidad: #1baf7a;
+}
+
+:root[data-tema='oscuro'] {
+  --grupo-evaluacion: #3987e5;
+  --grupo-actividad: #d95926;
+  --grupo-comunidad: #199e70;
+}
+
+.punto {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--texto-3);
+}
+
+.punto--evaluacion { background: var(--grupo-evaluacion); }
+.punto--actividad { background: var(--grupo-actividad); }
+.punto--comunidad { background: var(--grupo-comunidad); }
+
+/* --- Barra: mes y navegación ---------------------------------------------- */
+
+.calendario {
+  padding-top: clamp(16px, 2.5vw, 28px);
+}
+
+.calendario__barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.calendario__mes {
+  font-family: var(--fuente-titulo);
+  font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.375rem);
+  font-weight: 700;
+  letter-spacing: -0.028em;
+}
+
+.calendario__mes span {
+  color: var(--texto-3);
+  font-weight: 500;
+}
+
+.calendario__navegacion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendario__hoy {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 15px;
+}
+
+.calendario__filtros {
+  margin-bottom: 18px;
+}
+
+/* --- Cuadrícula + detalle ---------------------------------------------------- */
+
+.calendario__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 20px;
+}
+
+.calendario__rejilla {
+  overflow: hidden;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-media);
+  background: var(--superficie);
+}
+
+.calendario__semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-bottom: 1px solid var(--linea);
+}
+
+.calendario__semana span {
+  padding: 10px 12px 8px;
+  color: var(--texto-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.calendario__fila {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendario__fila + .calendario__fila {
+  border-top: 1px solid var(--linea);
+}
+
+.dia + .dia {
+  border-left: 1px solid var(--linea);
+}
+
+.dia__boton {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  min-height: 104px;
+  padding: 6px 6px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease-suave);
+}
+
+.dia__boton:hover {
+  background: var(--superficie-hover);
+}
+
+.dia__boton:focus-visible {
+  outline-offset: -3px;
+  border-radius: 0;
+}
+
+.dia--elegido .dia__boton {
+  background: var(--azul-tenue);
+}
+
+.dia__numero {
+  display: grid;
+  place-items: center;
+  align-self: flex-start;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 4px;
+  border-radius: var(--r-pildora);
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.dia--fuera .dia__numero {
+  color: var(--texto-3);
+}
+
+.dia--hoy .dia__numero {
+  background: var(--azul);
+  color: var(--sobre-azul);
+  font-weight: 700;
+}
+
+.dia__eventos {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 2px 4px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.chip .punto {
+  width: 6px;
+  height: 6px;
+}
+
+.chip__hora {
+  color: var(--texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.chip__titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip--mas {
+  color: var(--texto-2);
+  font-weight: 500;
+}
+
+.dia--fuera .chip {
+  opacity: 0.6;
+}
+
+.dia__puntos {
+  display: none;
+  gap: 3px;
+  justify-content: center;
+}
+
+.dia__puntos .punto {
+  width: 6px;
+  height: 6px;
+}
+
+/* --- Detalle del día --------------------------------------------------------- */
+
+.calendario__detalle {
+  position: sticky;
+  top: calc(var(--barra-alto) + 16px);
+  padding: 22px;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-media);
+  background: var(--superficie);
+}
+
+.detalle__dia {
+  color: var(--azul-texto);
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.detalle__fecha {
+  margin-bottom: 14px;
+  font-family: var(--fuente-titulo);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.detalle__vacio {
+  color: var(--texto-2);
+}
+
+.detalle__subtitulo {
+  margin: 18px 0 6px;
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.detalle__siguientes button {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  margin: 0 -8px;
+  border: 0;
+  border-radius: var(--r-chica);
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.detalle__siguientes button:hover {
+  background: var(--superficie-hover);
+}
+
+.detalle__siguientes .punto {
+  margin-top: 7px;
+}
+
+.detalle__siguientes button > span:last-child {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.detalle__siguientes strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.detalle__siguientes button > span:last-child > span {
+  color: var(--texto-2);
+  font-size: 13px;
+}
+
+.detalle__lista {
+  display: grid;
+  gap: 16px;
+}
+
+.evento-detalle {
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr);
+  gap: 12px;
+  padding: 4px 0;
+  border-radius: var(--r-chica);
+  transition: background-color 0.4s var(--ease-suave);
+}
+
+.evento-detalle--destacado {
+  background: var(--azul-tenue);
+  padding: 10px;
+  margin: -6px;
+}
+
+.evento-detalle__barra {
+  width: 4px;
+  border-radius: 4px;
+}
+
+.evento-detalle strong {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.evento-detalle__meta {
+  margin-top: 2px;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.evento-detalle__resumen {
+  margin: 6px 0;
+  color: var(--texto-2);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.evento-detalle .enlace-flecha {
+  font-size: 14px;
+}
+
+/* --- Lista «Lo que viene» -------------------------------------------------- */
+
+.proximas .seccion__titulo {
+  margin-bottom: 20px;
+}
+
+.proximas__semana + .proximas__semana {
+  margin-top: 24px;
+}
+
+.proximas__titulo-semana {
+  margin-bottom: 6px;
+  color: var(--texto-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.proxima {
+  display: grid;
+  grid-template-columns: 44px auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--linea);
+}
+
+.proxima__fecha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.proxima__fecha strong {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.proxima__fecha span {
+  color: var(--texto-2);
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.proxima__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.proxima__texto strong {
+  font-weight: 600;
+}
+
+.proxima__texto span {
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.proxima__ics {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pildora);
+  color: var(--azul-texto);
+}
+
+.proxima__ics:hover {
+  background: var(--azul-tenue);
+}
+
+/* --- Responsivo ------------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .calendario__cuerpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .calendario__detalle {
+    position: static;
+  }
+}
+
+/* En el teléfono cada día muestra puntos en vez de títulos. */
+@media (max-width: 700px) {
+  .dia__boton {
+    align-items: center;
+    min-height: 56px;
+    padding: 6px 2px;
+  }
+
+  .dia__numero {
+    align-self: center;
+  }
+
+  .dia__eventos {
+    display: none;
+  }
+
+  .dia__puntos {
+    display: flex;
+  }
+
+  .calendario__semana span {
+    padding: 8px 0;
+    text-align: center;
+  }
+
+  .calendario__hoy {
+    padding: 0 14px;
+  }
+}

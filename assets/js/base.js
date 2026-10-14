@@ -1,6 +1,6 @@
 /* ==========================================================================
    CEPC · Sitio público
-   sitio.js — Tema claro/oscuro, menú móvil, barra con fondo al bajar,
+   base.js — Tema claro/oscuro, menú móvil, barra con fondo al bajar,
    aparición de secciones y flechas de la agenda.
 
    Sin dependencias. Todo funciona sin este archivo, salvo el cambio de tema.
@@ -82,7 +82,10 @@
      Se usa un testigo de 1px arriba de la página en vez de escuchar scroll.
      --------------------------------------------------------------------- */
 
-  if (barra && 'IntersectionObserver' in window) {
+  // En las páginas interiores la barra es sólida siempre (barra--fija).
+  if (barra && barra.classList.contains('barra--fija')) {
+    // nada que observar
+  } else if (barra && 'IntersectionObserver' in window) {
     var testigo = document.createElement('div');
     testigo.setAttribute('aria-hidden', 'true');
     testigo.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:24px;pointer-events:none';

@@ -1,0 +1,62 @@
+/* ==========================================================================
+   CEPC · Sitio público
+   inicio/preguntas.css — Preguntas frecuentes.
+   ========================================================================== */
+
+.preguntas {
+  border-top: 1px solid var(--linea);
+}
+
+.pregunta {
+  border-bottom: 1px solid var(--linea);
+}
+
+.pregunta summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 0;
+  font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  list-style: none;
+  cursor: pointer;
+}
+
+.pregunta summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (hover: hover) {
+  .pregunta summary:hover {
+    color: var(--azul-texto);
+  }
+}
+
+.pregunta__flecha {
+  color: var(--texto-2);
+  transition: transform 0.35s var(--ease);
+}
+
+.pregunta[open] .pregunta__flecha {
+  transform: rotate(180deg);
+}
+
+.pregunta__respuesta {
+  padding: 0 40px 24px 0;
+  color: var(--texto-2);
+}
+
+/* Apertura suave donde el navegador lo permite. */
+@media (prefers-reduced-motion: no-preference) {
+  .pregunta::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size 0.4s var(--ease), content-visibility 0.4s allow-discrete;
+  }
+
+  .pregunta[open]::details-content {
+    block-size: auto;
+  }
+}

@@ -17,7 +17,7 @@ DirectoryIndex index.php
 </FilesMatch>
 
 RedirectMatch 404 /\.git
-RedirectMatch 404 ^/(includes|demo|herramientas)/
+RedirectMatch 404 ^/(includes|demo|herramientas|referencias)/
 
 # --- Cabeceras de seguridad ------------------------------------------------
 <IfModule mod_headers.c>

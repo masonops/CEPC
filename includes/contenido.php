@@ -104,3 +104,63 @@ function contenido_preguntas(): array
         ],
     ];
 }
+
+/**
+ * Documentos oficiales de la página de transparencia. Pega el enlace (PDF,
+ * Drive, etc.) en 'url'; mientras esté vacío, aparece como «Pronto».
+ */
+function contenido_documentos(): array
+{
+    return [
+        [
+            'titulo'      => 'Estatutos del CEPC',
+            'descripcion' => 'Cómo se organiza el centro de estudiantes, sus cargos y cómo se toman las decisiones.',
+            'url'         => '',
+        ],
+        [
+            'titulo'      => 'Reglamento de elecciones',
+            'descripcion' => 'Plazos, requisitos de las listas y cómo se cuentan los votos.',
+            'url'         => '',
+        ],
+        [
+            'titulo'      => 'Archivo de actas',
+            'descripcion' => 'Todas las actas de asambleas y reuniones de directiva, ordenadas por fecha.',
+            'url'         => '',
+        ],
+        [
+            'titulo'      => 'Cuenta pública anual',
+            'descripcion' => 'El balance de la gestión al cierre de cada año.',
+            'url'         => '',
+        ],
+    ];
+}
+
+/**
+ * Ramos de Plan Común para el buscador. Si el panel está conectado se usa su
+ * lista (Docencia); ésta es el respaldo.
+ */
+function contenido_ramos(): array
+{
+    if (function_exists('cat_ramos')) {
+        $ramos = cat_ramos();
+        unset($ramos['otro']);
+        return array_map(static fn(string $n): string => trim(preg_replace('/^[A-Z]{2}\d{4}\s*·\s*/u', '', $n) ?? $n), $ramos);
+    }
+    return [
+        'MA1001' => 'Introducción al Cálculo',
+        'MA1002' => 'Cálculo Diferencial e Integral',
+        'MA1101' => 'Introducción al Álgebra',
+        'MA1102' => 'Álgebra Lineal',
+        'MA2001' => 'Cálculo en Varias Variables',
+        'MA2601' => 'Ecuaciones Diferenciales Ordinarias',
+        'FI1001' => 'Introducción a la Física Clásica',
+        'FI1002' => 'Sistemas Newtonianos',
+        'FI2001' => 'Mecánica',
+        'FI2002' => 'Electromagnetismo',
+        'CC1002' => 'Introducción a la Programación',
+        'CC3001' => 'Algoritmos y Estructuras de Datos',
+        'CM1002' => 'Química',
+        'QU1000' => 'Química',
+        'EI1000' => 'Introducción a la Ingeniería',
+    ];
+}
