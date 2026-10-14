@@ -43,7 +43,7 @@ ANCHO_MAPA, ALTO_MAPA = 1110, 730
 
 # Etiquetas que conviene ubicar a mano (coordenadas del mapa ya girado).
 ETIQUETAS_FIJAS = {
-    'escuela': (322, 360),   # en el ala norte, sobre el pasillo central
+    'escuela': (321, 420),   # sobre el pasillo central, que une ambas alas
 }
 
 
@@ -220,16 +220,30 @@ union = union.simplify(0.6)
 edificios['escuela'] = limpiar(list(union.exterior.coords)[:-1])
 
 # Zonas interiores de la Escuela. El pasillo central cruza el edificio de
-# poniente a oriente, a la altura de la entrada de Beauchef 850.
+# poniente a oriente, a la altura de la entrada de Beauchef 850; al norte
+# queda la Biblioteca y al sur el Hall Sur, cada una hasta casi tocarlo.
+PASILLO_Y = (412, 428)
+HOLGURA = 2.5
 caja = Polygon(edificios['escuela']).bounds
+contorno = Polygon(edificios['escuela']).buffer(-1.5, join_style=2)
+
+
+def mitad(y1, y2):
+    franja = Polygon([(caja[0] - 5, y1), (caja[2] + 5, y1), (caja[2] + 5, y2), (caja[0] - 5, y2)])
+    parte = franja.intersection(Polygon(edificios['escuela'])).simplify(0.8)
+    if parte.geom_type != 'Polygon':
+        parte = max(parte.geoms, key=lambda g: g.area)
+    return limpiar(list(parte.exterior.coords)[:-1])
+
+
 zonas = {
-    'biblioteca': {'edificio': 'escuela', 'poligono': biblioteca},
-    'hall-sur':   {'edificio': 'escuela', 'poligono': hall_sur},
+    'biblioteca': {'edificio': 'escuela', 'poligono': mitad(caja[1] - 5, PASILLO_Y[0] - HOLGURA)},
+    'hall-sur':   {'edificio': 'escuela', 'poligono': mitad(PASILLO_Y[1] + HOLGURA, caja[3] + 5)},
     'pasillo':    {'edificio': 'escuela', 'poligono': []},
 }
 # El pasillo es una franja de oriente a poniente recortada al contorno de la Escuela.
-franja = Polygon([(caja[0] + 4, 412), (caja[2], 412), (caja[2], 428), (caja[0] + 4, 428)])
-recorte = franja.intersection(Polygon(edificios['escuela']).buffer(-1.5, join_style=2)).simplify(0.8)
+franja = Polygon([(caja[0] + 4, PASILLO_Y[0]), (caja[2], PASILLO_Y[0]), (caja[2], PASILLO_Y[1]), (caja[0] + 4, PASILLO_Y[1])])
+recorte = franja.intersection(contorno).simplify(0.8)
 if recorte.geom_type != 'Polygon':
     recorte = max(recorte.geoms, key=lambda g: g.area)
 zonas['pasillo']['poligono'] = limpiar(list(recorte.exterior.coords)[:-1])

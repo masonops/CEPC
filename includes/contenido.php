@@ -61,8 +61,8 @@ function contenido_ayuda(): array
 {
     return [
         'apuntes' => [
-            'titulo' => 'Apuntes y solemnes antiguas',
-            'texto'  => 'Apuntes, guías, controles y solemnes resueltas, ordenados por ramo.',
+            'titulo' => 'Apuntes y tareas',
+            'texto'  => 'Apuntes y tareas de todas las secciones, ordenados por ramo.',
         ],
         'tutorias' => [
             'titulo' => 'Tutorías y reforzamientos',
@@ -106,10 +106,6 @@ function contenido_preguntas(): array
             [
                 'pregunta'  => '¿Dónde veo sus propuestas?',
                 'respuesta' => 'En la sección <a href="' . esc(pagina('inicio', 'articulos')) . '">Propuestas y artículos</a> de esta página. Vamos publicando una por una, con el detalle de cómo la haríamos.',
-            ],
-            [
-                'pregunta'  => '¿Puedo sumarme o proponer algo?',
-                'respuesta' => 'Sí, y nos encanta. Todas nuestras propuestas parten de conversaciones con estudiantes: escríbenos por Instagram o correo, o búscanos en el patio.',
             ],
         ];
     }

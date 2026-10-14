@@ -41,6 +41,7 @@ $correo       = datos_correo();
       <h2>Sitio</h2>
       <ul>
         <li><a href="<?= esc(pagina('articulos')) ?>"><?= es_lista() ? 'Propuestas' : 'Publicaciones' ?></a></li>
+        <li><a href="<?= esc(pagina('roomies')) ?>">Roomies</a></li>
         <li><a href="<?= esc(pagina('calendario')) ?>">Calendario</a></li>
         <li><a href="<?= esc(pagina('mapa')) ?>">Mapa del campus</a></li>
         <li><a href="<?= esc(pagina('calculadora')) ?>">Calculadora de notas</a></li>

@@ -56,7 +56,7 @@ require $raiz . '/includes/arranque.php';
 copiar_carpeta($raiz . '/assets', $salida . '/assets');
 file_put_contents($salida . '/.nojekyll', '');
 
-$paginas = ['index', 'articulos', 'calendario', 'mapa', 'calculadora', 'transparencia', 'buscar'];
+$paginas = ['index', 'articulos', 'roomies', 'roomies-publicar', 'calendario', 'mapa', 'calculadora', 'transparencia', 'buscar'];
 foreach ($paginas as $nombre) {
     $archivo = $raiz . '/' . $nombre . '.php';
     if (!is_file($archivo)) {
@@ -78,6 +78,14 @@ foreach (datos_articulos(500) as $articulo) {
     $paginas[] = 'articulo-' . $id;
 }
 echo '  ' . count(datos_articulos(500)) . " publicaciones\n";
+
+// Una página por cada aviso de Roomies (roomie.php?id=N → roomie-N.html).
+foreach (datos_roomies() as $roomie) {
+    $id = (int) $roomie['id'];
+    file_put_contents($salida . '/roomie-' . $id . '.html', construir_pagina($raiz . '/roomie.php', ['id' => (string) $id]));
+    $paginas[] = 'roomie-' . $id;
+}
+echo '  ' . count(datos_roomies()) . " avisos de Roomies\n";
 
 // Un .ics por cada fecha que aparece en la página.
 require_once $raiz . '/includes/ics.php';

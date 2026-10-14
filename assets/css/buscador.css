@@ -49,7 +49,7 @@
   font-size: 12px;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
   .buscar-pildora__texto,
   .buscar-pildora__atajo {
     display: none;

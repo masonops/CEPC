@@ -4,7 +4,7 @@
  * includes/secciones/inicio/ayuda.php
  *
  * «Lo que necesitas, a mano»: apuntes, tutorías, bienestar,
- * problemas académicos, mapa y calculadora. Los textos están en
+ * problemas académicos, mapa, calculadora y Roomies. Los textos están en
  * includes/contenido.php → contenido_ayuda().
  */
 
@@ -17,6 +17,7 @@ $correo       = datos_correo();
 $urlApuntes   = (string) sitio('banco_apuntes_url', '');
 $instagram    = datos_instagram();
 $urlInstagram = datos_url_instagram();
+$roomies      = (sitio('roomies')['activo'] ?? true) ? datos_roomies() : [];
 ?>
 <section class="seccion" id="ayuda" aria-labelledby="ayuda-titulo">
   <div class="contenedor">
@@ -95,6 +96,28 @@ $urlInstagram = datos_url_instagram();
         <h3>¿Cuánto necesito?</h3>
         <p>Calcula la nota mínima para aprobar con 4,0 o ir a segunda con 3,7.</p>
         <span class="enlace-flecha">Calcular <?= icono('arrow-right') ?></span>
+      </a>
+
+      <a class="bento__celda bento__celda--roomies revelar" href="<?= esc(pagina('roomies')) ?>">
+        <div class="bento__roomies-texto">
+          <div class="bento__icono"><?= icono('house') ?></div>
+          <h3>Roomies para foráneos</h3>
+          <p>Piezas y deptos para compartir cerca de Beauchef, publicados por estudiantes con su correo de la Universidad verificado.</p>
+          <?php if ($roomies !== []): ?>
+            <p class="bento__roomies-cifra"><strong><?= count($roomies) ?></strong> <?= count($roomies) === 1 ? 'aviso' : 'avisos' ?> · desde <strong><?= esc(roomie_pesos(min(array_column($roomies, 'precio')))) ?></strong> al mes</p>
+          <?php endif; ?>
+          <span class="enlace-flecha"><?= $roomies !== [] ? 'Ver avisos' : 'Publicar mi pieza' ?> <?= icono('arrow-right') ?></span>
+        </div>
+        <?php if ($roomies !== []): ?>
+          <ul class="bento__roomies-fotos" aria-hidden="true">
+            <?php foreach (array_slice($roomies, 0, 3) as $r): if (empty($r['fotos'][0])) continue; ?>
+              <li>
+                <img src="<?= esc($r['fotos'][0]['m']) ?>" alt="" loading="lazy" decoding="async" width="640" height="427">
+                <span><?= esc(roomie_pesos($r['precio'])) ?> · <?= (int) $r['cercania']['a_pie'] ?> min</span>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        <?php endif; ?>
       </a>
     </div>
   </div>

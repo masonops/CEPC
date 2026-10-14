@@ -21,7 +21,7 @@ $directiva = datos_directiva();
       <?php if (es_lista()): ?>
         <p class="declaracion revelar">
           <strong><?= esc(sitio('lista')['lema']) ?>.</strong>
-          Somos <span translate="no"><?= esc(sitio('lista')['nombre']) ?></span>, una lista de estudiantes de primer y segundo año que se presenta al Centro de Estudiantes de Plan Común. Queremos un CEPC cercano, ordenado y transparente.
+          Somos <span translate="no"><?= esc(sitio('lista')['nombre']) ?></span>, una lista de estudiantes de primer año que se presenta al Centro de Estudiantes de Plan Común.
         </p>
       <?php else: ?>
         <p class="declaracion revelar">

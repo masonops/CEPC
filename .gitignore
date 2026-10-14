@@ -1,3 +1,5 @@
 _site/
 .DS_Store
 cepc-vista-previa.zip
+uploads/roomies/*
+!uploads/roomies/.gitkeep

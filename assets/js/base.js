@@ -72,7 +72,7 @@
         botonMenu.focus();
       }
     });
-    window.matchMedia('(min-width: 861px)').addEventListener('change', function (m) {
+    window.matchMedia('(min-width: 961px)').addEventListener('change', function (m) {
       if (m.matches) abrirMenu(false);
     });
   }

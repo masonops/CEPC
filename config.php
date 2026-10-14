@@ -54,6 +54,31 @@ return [
     // si el panel está dentro del sitio, o se oculta el enlace.
     'panel_url'  => '',
 
+    /* --- Roomies -------------------------------------------------------- */
+    // Dirección pública del sitio, con https y sin / al final
+    // (ej. https://paratodos.cl). Se usa en los enlaces de los correos.
+    // Vacío = se deduce de la visita.
+    'url_sitio' => '',
+
+    'roomies' => [
+        // false = la página muestra «muy pronto» y no se puede publicar.
+        'activo'         => true,
+        // Sólo estos correos pueden publicar y escribir (verificación de estudiante).
+        'dominios'       => ['ug.uchile.cl', 'uchile.cl'],
+        // true = los avisos esperan aprobación del equipo antes de verse.
+        'moderar'        => false,
+        // Remitente de los correos. Debe ser una casilla del mismo dominio
+        // del sitio (créala en el hosting) o los correos llegan a spam.
+        'remitente'      => '',
+        // Dónde llegan los reportes de avisos. Vacío = el 'correo' de arriba.
+        'correo_reportes' => '',
+        // Días que un aviso queda publicado antes de pedir renovarlo.
+        'dias_vigencia'  => 60,
+        'max_fotos'      => 8,
+        // Avisos activos a la vez por correo.
+        'max_por_correo' => 2,
+    ],
+
     /* --- Portada -------------------------------------------------------- */
     // Cuántos días hacia adelante se miran para elegir el evento destacado.
     'destacado_dias_evento'  => 21,

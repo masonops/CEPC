@@ -5,7 +5,8 @@
  *
  * «Cuentas claras»: el balance del año y accesos directos a la página de
  * transparencia (rendición de cuentas, asambleas, votaciones y estatutos).
- * Los números salen de Finanzas en el panel.
+ * Los números salen de Finanzas en el panel (en modo lista no se muestran:
+ * todavía no administramos plata).
  */
 
 declare(strict_types=1);
@@ -24,13 +25,15 @@ $accesos     = [
     <div class="cuentas__resumen revelar">
       <?php if (es_lista()): ?>
         <h2 id="transparencia-titulo" class="seccion__titulo">Cuentas claras, desde el día uno.</h2>
-        <p class="seccion__bajada">Nuestra propuesta: si somos CEPC, todo lo que entre y salga será público. Así se vería (con datos de ejemplo):</p>
+        <p class="seccion__bajada">Nuestra propuesta: si somos CEPC, todo lo que entre y salga será público, junto con las asambleas, votaciones y estatutos.</p>
       <?php else: ?>
         <h2 id="transparencia-titulo" class="seccion__titulo">Cuentas claras.</h2>
         <p class="seccion__bajada">Todo lo que entra y sale del CEPC es público. Esto va de <?= esc($anioCuentas) ?>.</p>
       <?php endif; ?>
 
-      <?php if ($resumen['movimientos'] === 0): ?>
+      <?php if (es_lista()): ?>
+        <a class="enlace-flecha" href="<?= esc(pagina('transparencia')) ?>">Ver cómo funcionaría <?= icono('arrow-right') ?></a>
+      <?php elseif ($resumen['movimientos'] === 0): ?>
         <p class="cuentas__vacio">Aún no hay movimientos publicados este año.</p>
       <?php else: ?>
         <dl class="cifras">

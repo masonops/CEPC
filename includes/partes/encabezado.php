@@ -10,6 +10,7 @@
  *   $paginaActual  'inicio', 'articulos', 'calendario', 'mapa', 'calculadora', 'transparencia' o 'buscar'
  *   $estilos       hojas propias de la página, relativas a assets/css/ y sin .css
  *   $scripts       scripts propios de la página, relativos a assets/js/ y sin .js
+ *   $conMapa       true para cargar Leaflet (mapas de Roomies)
  */
 
 declare(strict_types=1);
@@ -22,6 +23,7 @@ $scripts      ??= [];
 $navegacion = [
     'inicio'        => 'Inicio',
     'articulos'     => es_lista() ? 'Propuestas' : 'Publicaciones',
+    'roomies'       => 'Roomies',
     'calendario'    => 'Calendario',
     'mapa'          => 'Mapa',
     'calculadora'   => 'Calculadora',
@@ -40,7 +42,7 @@ $navegacion = [
 <meta property="og:type" content="website">
 <meta property="og:title" content="<?= esc($titulo) ?>">
 <meta property="og:description" content="<?= esc($descripcion) ?>">
-<meta property="og:image" content="<?= esc(recurso(es_lista() ? 'assets/img/lista-compartir.png' : 'assets/img/logo-cepc.png')) ?>">
+<meta property="og:image" content="<?= esc($imagenCompartir ?? recurso(es_lista() ? 'assets/img/lista-compartir.png' : 'assets/img/logo-cepc.png')) ?>">
 <meta property="og:locale" content="es_CL">
 <link rel="icon" type="image/png" href="<?= esc(recurso(es_lista() ? 'assets/img/lista-favicon.png' : 'assets/img/favicon.png')) ?>">
 <link rel="apple-touch-icon" href="<?= esc(recurso(es_lista() ? 'assets/img/lista-icono.png' : 'assets/img/apple-touch-icon.png')) ?>">
@@ -59,6 +61,10 @@ $navegacion = [
 </script>
 <link rel="stylesheet" href="<?= esc(recurso('assets/css/base.css')) ?>">
 <link rel="stylesheet" href="<?= esc(recurso('assets/css/buscador.css')) ?>">
+<?php if (!empty($conMapa)): ?>
+<link rel="stylesheet" href="<?= esc(recurso('assets/vendor/leaflet/leaflet.css')) ?>">
+<script src="<?= esc(recurso('assets/vendor/leaflet/leaflet.js')) ?>" defer></script>
+<?php endif; ?>
 <?php foreach ($estilos as $hoja): ?>
 <link rel="stylesheet" href="<?= esc(recurso('assets/css/' . $hoja . '.css')) ?>">
 <?php endforeach; ?>

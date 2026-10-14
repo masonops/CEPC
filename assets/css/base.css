@@ -224,6 +224,10 @@ a:hover {
   transform: rotate(180deg);
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .oculto {
   position: absolute !important;
   width: 1px;
@@ -530,7 +534,7 @@ a:hover {
 .nav {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: clamp(16px, 2vw, 28px);
 }
 
 .nav a {
@@ -570,7 +574,7 @@ a:hover {
   display: block;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 960px) {
   .boton-menu {
     display: inline-grid;
   }

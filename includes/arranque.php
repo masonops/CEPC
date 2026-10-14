@@ -65,5 +65,7 @@ require SITIO_RAIZ . '/includes/contenido.php';
 require SITIO_RAIZ . '/includes/datos.php';
 require SITIO_RAIZ . '/includes/datos-transparencia.php';
 require SITIO_RAIZ . '/includes/datos-articulos.php';
+require SITIO_RAIZ . '/includes/datos-roomies.php';
+require SITIO_RAIZ . '/includes/roomies/vistas.php';
 require SITIO_RAIZ . '/includes/mapa/mapa.php';
 require SITIO_RAIZ . '/includes/busqueda.php';

@@ -12,6 +12,10 @@ ser el del CEPC cambiando una línea (ver *Modo lista o modo CEPC*).
 | `index.php` | Portada: lema y próxima fecha importante, propuestas y artículos, próximas fechas, recursos, Instagram, cuentas claras, quiénes somos y preguntas frecuentes |
 | `articulos.php` | Todas las propuestas y publicaciones, con filtro por categoría |
 | `articulo.php?id=N` | Una publicación completa |
+| `roomies.php` | **Roomies**: piezas y deptos para compartir, con filtros, mapa y avisos verificados |
+| `roomie.php?id=N` | Ficha de un aviso: fotos, precio desglosado, cómo llegar a Beauchef, convivencia, quién publica y contacto |
+| `roomies-publicar.php` | Formulario para publicar (se confirma con el correo U. de Chile) |
+| `roomies-verificar.php`, `roomies-gestionar.php` | Los enlaces que llegan por correo: confirmar y administrar el aviso |
 | `calendario.php` | Mes completo con solemnes, controles, entregas, actividades y asambleas; filtros y detalle por día |
 | `mapa.php` | Mapa interactivo de Beauchef 850 y 851: edificios, pisos y salas, rutas desde la entrada y dónde comer |
 | `calculadora.php` | Cuánto necesitas en lo que queda para aprobar (4,0) o ir a segunda (3,7) |
@@ -33,6 +37,10 @@ index.php, calendario.php, …        cada página sólo junta sus secciones
 includes/secciones/inicio/          una sección de la portada por archivo
 includes/secciones/articulos/       (listado.php)
 includes/secciones/articulo/        (cuerpo.php, mas.php)
+includes/secciones/roomies/         (cabecera, filtros, resultados, como-funciona)
+includes/secciones/roomie/          (cabecera, galeria, detalles, contacto, similares)
+includes/secciones/roomies-publicar/ una parte del formulario por archivo
+includes/roomies/                   acciones.php (escribir), vistas.php (tarjeta), metro.php (estaciones)
 includes/secciones/calendario/      (mes.php, lista.php)
 includes/secciones/mapa/            (lienzo.php, panel.php)
 includes/secciones/calculadora/     (calculadora.php, explicacion.php)
@@ -127,7 +135,9 @@ SparkedHost (sección siguiente).
 
 ## 2. Subirlo a SparkedHost
 
-La idea es que el sitio quede en la raíz del dominio y el panel en `/panel/`:
+**La guía completa, paso a paso, está en [`GUIA-SPARKEDHOST.md`](GUIA-SPARKEDHOST.md)**
+(PHP, base de datos, archivos, correo, HTTPS y pruebas). En resumen, el
+sitio queda en la raíz del dominio y el panel en `/panel/`:
 
 ```
 public_html/
@@ -259,7 +269,55 @@ completarlos:
 
 ---
 
-## 6. Diseño
+## 6. Roomies
+
+Propuesta para estudiantes foráneos: avisos de piezas y deptos publicados
+por estudiantes.
+
+**Cómo funciona**
+
+1. La persona llena `roomies-publicar.php` con su correo de la Universidad
+   (dominios en `config.php` → `roomies.dominios`). El aviso se guarda como
+   `pendiente` y le llega un correo con dos enlaces: uno para confirmar y
+   otro, privado, para administrarlo.
+2. Al confirmar, queda `publicado` por 60 días (`roomies.dias_vigencia`), o
+   en `revision` si `roomies.moderar` es `true`.
+3. Quien quiera arrendar escribe desde el aviso, también con correo de la U.
+   El mensaje le llega por correo a quien publicó, con «Responder a» al
+   interesado. **El correo de quien publica nunca se muestra.**
+4. Con el enlace privado puede pausar, renovar, marcar «arrendado» o
+   borrar (se borran fotos y datos personales).
+
+**Lo que se calcula solo:** distancia y minutos a pie y en bici hasta
+Beauchef 850, y las tres estaciones de Metro más cercanas
+(`includes/roomies/metro.php`, datos de Wikidata). El mapa muestra el punto
+corrido ~100 m para no revelar la dirección.
+
+**Seguridad:** token CSRF en cada formulario, campo trampa para bots,
+límites por persona (4 avisos al día, 8 mensajes por hora; tabla
+`roomies_registro`, con la IP resumida en un hash), las fotos se vuelven a
+dibujar como JPEG sin metadatos (se borra el GPS), y `uploads/.htaccess`
+impide ejecutar nada en esa carpeta.
+
+**Base de datos:** `sql/roomies.sql` (MySQL y SQLite). Para moderar o
+borrar avisos a mano, mientras el panel no tenga su módulo, usa phpMyAdmin:
+cambia `estado` a `publicado` o `eliminado`.
+
+| Quiero… | Archivo |
+|---|---|
+| Cambiar dominios permitidos, vigencia, moderación, remitente | `config.php` → `roomies` |
+| Cambiar comodidades, reglas, hábitos o comunas | `includes/datos-roomies.php` (constantes al inicio) |
+| Cambiar los textos de los correos | `includes/roomies/acciones.php` |
+| Sumar una estación de Metro nueva | `includes/roomies/metro.php` |
+| Cambiar la tarjeta de un aviso | `includes/roomies/vistas.php` → `roomie_tarjeta()` |
+
+Para probar el envío de correos en tu computador (donde `mail()` no
+funciona): `CEPC_CORREO_ARCHIVO=/tmp/correos.log php -S localhost:8100` y
+los correos se escriben en ese archivo.
+
+---
+
+## 7. Diseño
 
 - **Colores del logo.** El azul `#004AAD` es el único color de acción
   (botones y enlaces). El lila `#B88ED6` es decorativo: etiquetas de tipo de
@@ -279,7 +337,7 @@ completarlos:
 
 ---
 
-## 7. Créditos
+## 8. Créditos
 
 - Foto de Beauchef 851: [Carlos yo](https://commons.wikimedia.org/wiki/File:Beauchef_851,_FCFM_Universidad_de_Chile,_Santiago_20231215.jpg),
   licencia [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.es),
@@ -287,6 +345,13 @@ completarlos:
   (`fondo-beauchef.jpg`, `beauchef-851.jpg`) quedan bajo la misma licencia.
   El crédito aparece en el pie de la página: si cambian la foto por una
   propia, pueden quitarlo.
+- Mapas de Roomies: [Leaflet](https://leafletjs.com) (BSD-2, en
+  `assets/vendor/leaflet/`) con mosaicos de
+  [OpenStreetMap](https://www.openstreetmap.org/copyright) (© colaboradores
+  de OpenStreetMap). Estaciones de Metro: [Wikidata](https://www.wikidata.org) (CC0).
+- Fotos de los avisos de ejemplo (`assets/img/ejemplo/roomies/`):
+  [Unsplash](https://unsplash.com/license). Las personas de los avisos de
+  ejemplo son inventadas.
 - Íconos: [Phosphor Icons](https://phosphoricons.com), licencia MIT
   (`assets/iconos/LICENCIA.txt`).
 - Tipografía Inter: SIL Open Font License (`assets/fuentes/LICENCIA-Inter.txt`).

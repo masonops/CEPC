@@ -12,7 +12,7 @@
  * en busqueda_indice().
  *
  * Forma de cada elemento:
- *   'grupo'    evaluacion · tarea · articulo · sala · edificio · ramo · lugar · pagina
+ *   'grupo'    evaluacion · tarea · articulo · roomie · sala · edificio · ramo · lugar · pagina
  *   'titulo'   lo que se muestra en grande
  *   'detalle'  la línea de abajo
  *   'url'      a dónde lleva
@@ -27,6 +27,7 @@ const BUSQUEDA_GRUPOS = [
     'evaluacion' => ['titulo' => 'Evaluaciones',        'icono' => 'graduation-cap'],
     'tarea'      => ['titulo' => 'Tareas y entregas',   'icono' => 'clipboard-text'],
     'articulo'   => ['titulo' => 'Propuestas y artículos', 'icono' => 'megaphone'],
+    'roomie'     => ['titulo' => 'Roomies',             'icono' => 'house'],
     'sala'       => ['titulo' => 'Salas',               'icono' => 'door'],
     'ramo'       => ['titulo' => 'Ramos',               'icono' => 'book-open-text'],
     'edificio'   => ['titulo' => 'Edificios',           'icono' => 'buildings'],
@@ -39,6 +40,7 @@ function busqueda_indice(): array
     return array_merge(
         busqueda_evaluaciones(),
         busqueda_articulos(),
+        busqueda_roomies(),
         busqueda_salas(),
         busqueda_ramos(),
         busqueda_edificios(),
@@ -80,6 +82,18 @@ function busqueda_articulos(): array
         'url'     => $a['url'],
         'claves'  => (string) ($a['resumen'] ?? ''),
     ], datos_articulos(100));
+}
+
+/** Avisos de Roomies. */
+function busqueda_roomies(): array
+{
+    return array_map(static fn(array $r): array => [
+        'grupo'   => 'roomie',
+        'titulo'  => $r['titulo'],
+        'detalle' => roomie_pesos($r['precio']) . '/mes · ' . $r['tipo_datos']['nombre'] . ' en ' . $r['comuna'] . ' · ' . $r['cercania']['a_pie'] . ' min a pie',
+        'url'     => $r['url'],
+        'claves'  => trim(($r['calle'] ?? '') . ' ' . ($r['cercania']['metro']['nombre'] ?? '') . ' pieza arriendo depto departamento roomie foraneo'),
+    ], datos_roomies());
 }
 
 /** Salas del mapa (B12, Auditorio Gorbea…). */
@@ -164,6 +178,8 @@ function busqueda_paginas(): array
 
     return [
         $p(es_lista() ? 'Propuestas y artículos' : 'Publicaciones', 'Todo lo que hemos publicado', pagina('articulos'), 'propuestas noticias lista programa'),
+        $p('Roomies', 'Piezas y deptos para compartir cerca de Beauchef', pagina('roomies'), 'arriendo pieza departamento foraneos vivir'),
+        $p('Publicar en Roomies', 'Publica tu pieza con tu correo U. de Chile', pagina('roomies-publicar'), 'arrendar subarrendar pieza'),
         $p('Calendario', 'Solemnes, controles, entregas y actividades', pagina('calendario'), 'fechas agenda pruebas'),
         $p('Mapa del campus', 'Edificios, salas, rutas y dónde comer', pagina('mapa'), 'plano ruta como llegar'),
         $p('Calculadora de notas', 'Cuánto necesitas para aprobar o ir a segunda', pagina('calculadora'), 'ponderacion promedio nota minima examen'),
@@ -172,7 +188,7 @@ function busqueda_paginas(): array
         $p('Asambleas y actas', 'Fechas, asistencia y acuerdos', pagina('transparencia', 'asambleas')),
         $p('Votaciones', 'Resultados de plebiscitos y consultas', pagina('transparencia', 'votaciones'), 'plebiscito elecciones'),
         $p('Estatutos', 'Documentos oficiales del CEPC', pagina('transparencia', 'documentos'), 'reglamento documentos'),
-        $p('Apuntes y solemnes antiguas', 'Banco de apuntes revisado por Docencia', pagina('inicio', 'ayuda'), 'certamenes guias'),
+        $p('Apuntes y tareas', 'Apuntes y tareas de todas las secciones', pagina('inicio', 'ayuda'), 'guias banco material'),
         $p('Bienestar', 'Salud mental, becas, BAES y apoyo', pagina('inicio', 'ayuda'), 'salud mental beca junaeb ayuda'),
         $p('Preguntas frecuentes', 'Sede, asambleas, cómo participar', pagina('inicio', 'preguntas'), 'faq ayuda'),
     ];

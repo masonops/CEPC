@@ -45,8 +45,8 @@ return [
         'descripcion' => 'El edificio frente a Beauchef 850. Un pasillo central lo cruza desde la entrada hasta la Sobria y lo divide en dos alas: hacia el norte la Biblioteca y hacia el sur el Hall Sur. A cada lado del pasillo hay escaleras al segundo piso, y junto a la del lado norte, una bajada a la Cafeta.',
         'servicios'   => ['Baños', 'Auditorio Gorbea', 'Escaleras al 2.º piso', 'Bajada a la Cafeta'],
         'zonas' => [
-            'biblioteca' => ['nombre' => 'Biblioteca', 'descripcion' => 'Biblioteca y salas de estudio, en el extremo norte.'],
-            'hall-sur'   => ['nombre' => 'Hall Sur', 'descripcion' => 'Extremo sur del edificio.'],
+            'biblioteca' => ['nombre' => 'Biblioteca', 'descripcion' => 'Ala norte, desde el pasillo central: biblioteca y salas de estudio.'],
+            'hall-sur'   => ['nombre' => 'Hall Sur', 'descripcion' => 'Ala sur, desde el pasillo central hasta el extremo sur.'],
             'pasillo'    => ['nombre' => 'Pasillo central', 'descripcion' => 'Va de la entrada de Beauchef 850 a la Sobria.'],
         ],
         'pisos' => [
