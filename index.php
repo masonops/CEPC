@@ -80,7 +80,7 @@ require __DIR__ . '/includes/partes/encabezado.php';
           <?php endif; ?>
           <div class="portada__acciones">
             <?php if ($esEvento): ?>
-              <a class="boton boton--primario" href="ics.php?id=<?= (int) $destacado['id'] ?>" download>
+              <a class="boton boton--primario" href="<?= esc(enlace_ics((int) $destacado['id'])) ?>" download>
                 <?= icono('calendar-blank') ?> Agregar al calendario
               </a>
               <a class="boton boton--vidrio" href="#agenda">Ver la agenda</a>
@@ -162,7 +162,7 @@ require __DIR__ . '/includes/partes/encabezado.php';
               <?php if (!empty($ev['hora_inicio'])): ?><span><?= icono('clock') ?><?= esc(hora_texto($ev['hora_inicio'])) ?></span><?php endif; ?>
               <?php if (!empty($ev['lugar'])): ?><span><?= icono('map-pin') ?><?= esc($ev['lugar']) ?></span><?php endif; ?>
             </p>
-            <a class="fecha__agregar" href="ics.php?id=<?= (int) $ev['id'] ?>" download aria-label="Agregar «<?= esc($ev['titulo']) ?>» al calendario">
+            <a class="fecha__agregar" href="<?= esc(enlace_ics((int) $ev['id'])) ?>" download aria-label="Agregar «<?= esc($ev['titulo']) ?>» al calendario">
               <?= icono('calendar-blank') ?> Agregar
             </a>
           </li>

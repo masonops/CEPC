@@ -44,6 +44,13 @@ declare(strict_types=1);
 
 <a class="saltar" href="#contenido">Saltar al contenido</a>
 
+<?php if (sitio('demo', false)): ?>
+  <p class="aviso-demo" role="note">
+    <strong>Vista previa con datos de ejemplo.</strong>
+    <span>Las fechas y publicaciones no son reales.</span>
+  </p>
+<?php endif; ?>
+
 <header class="barra" data-barra>
   <div class="contenedor barra__interior">
     <a class="marca" href="./" aria-label="<?= esc(sitio('sigla') . ', inicio') ?>">

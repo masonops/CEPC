@@ -44,6 +44,15 @@ function icono(string $nombre, string $clase = ''): string
     return preg_replace('/^<svg /', '<svg ' . $atributos . ' ', $cache[$nombre], 1) ?? '';
 }
 
+/**
+ * Enlace para agregar un evento al calendario: ics.php en el servidor, o
+ * el .ics ya generado en la versión estática.
+ */
+function enlace_ics(int $id): string
+{
+    return sitio('estatico', false) ? 'ics/evento-' . $id . '.ics' : 'ics.php?id=' . $id;
+}
+
 /* --------------------------------------------------------------------- */
 /*  Fechas                                                                */
 /* --------------------------------------------------------------------- */

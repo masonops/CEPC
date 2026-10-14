@@ -12,20 +12,52 @@ para modo oscuro (se recuerda en el navegador de cada persona).
 
 ## 1. Probarlo en tu computador
 
-El sitio lee los datos del panel, así que primero hay que tener el panel
-instalado (ver `../cepc-panel/README.md`). Luego:
+El sitio lee los datos del panel, así que lo ideal es tener el panel
+instalado (ver el README del panel) en una carpeta `cepc-panel` junto a
+ésta, o indicar dónde está en `config.php` → `panel_ruta`. Luego:
 
 ```bash
-cd cepc-web
 php -S localhost:8100
 ```
 
-Abre <http://localhost:8100>. El sitio encuentra solo el panel en
-`../cepc-panel` y usa su misma base de datos (MySQL o SQLite).
+Abre <http://localhost:8100>. El sitio usa la misma base de datos del panel
+(MySQL o SQLite).
 
 Si el panel no está o la base no responde, la página igual se muestra: el
 banner pasa a ser una bienvenida y cada sección muestra un aviso amable en
 vez de datos.
+
+Para ver la versión de GitHub Pages en tu computador:
+
+```bash
+php herramientas/construir-estatico.php
+cd _site && php -S localhost:8200
+```
+
+---
+
+## Vista previa en GitHub Pages
+
+GitHub Pages no ejecuta PHP ni puede leer la base del panel. Por eso el
+flujo `.github/workflows/pages.yml` arma una **versión estática con datos de
+ejemplo** (`demo/ejemplo.php`) y la publica. Arriba aparece una franja que
+dice «Vista previa con datos de ejemplo», para que nadie confunda esas
+fechas con las reales.
+
+- Se publica sola en cada `push` a `main` y una vez al día (00:17 en
+  Santiago), así «Hoy», «Mañana» y «En 3 días» siempre están bien.
+- También se puede lanzar a mano: *Actions → Publicar en GitHub Pages →
+  Run workflow*.
+- Los botones «Agregar al calendario» descargan archivos `.ics` generados
+  durante la construcción.
+
+**Activarla (una sola vez):** *Settings → Pages → Build and deployment →
+Source: GitHub Actions*. Si el repositorio es privado, GitHub Pages pide un
+plan pagado; con el repositorio público funciona gratis (aquí no hay datos
+del panel ni contraseñas).
+
+El sitio de verdad, con los datos del panel, es el que se sube a
+SparkedHost (sección siguiente).
 
 ---
 
@@ -39,7 +71,8 @@ public_html/
 └── panel/                                               ← cepc-panel
 ```
 
-1. Sube el contenido de `cepc-web/` a `public_html/`.
+1. Sube el contenido de este repositorio a `public_html/` (las carpetas
+   `.github/`, `demo/` y `herramientas/` no hacen falta en el servidor).
 2. Sube `cepc-panel/` a `public_html/panel/` (con su `.env`, como dice su README).
 3. Listo: el sitio detecta `./panel` solo y muestra el enlace «Acceso
    directiva» en el pie.
@@ -91,6 +124,7 @@ la agenda tiene el mismo botón.
 | Cambiar qué tipos de evento son públicos o cuánto pesan | `includes/datos.php` → `TIPOS_PUBLICOS` |
 | Cambiar colores, tipografía o espacios | `assets/css/sitio.css` (tokens al inicio) |
 | Cambiar la foto del banner | `assets/img/fondo-beauchef.jpg` (se difumina sola) |
+| Cambiar los datos de ejemplo de GitHub Pages | `demo/ejemplo.php` |
 | Agregar un ícono | Descargar el SVG de [Phosphor](https://phosphoricons.com) (estilo *regular*) a `assets/iconos/` y usar `icono('nombre')` |
 
 ---

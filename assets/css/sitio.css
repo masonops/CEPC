@@ -367,6 +367,26 @@ a:hover {
   height: 20px;
 }
 
+/* Franja de la vista previa (GitHub Pages): deja claro que los datos son de ejemplo. */
+.aviso-demo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px 6px;
+  margin: 0;
+  padding: 9px max(var(--margen), env(safe-area-inset-left));
+  background: var(--lila-suave);
+  border-bottom: 1px solid var(--lila-tenue);
+  color: var(--lila-texto);
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.aviso-demo strong {
+  font-weight: 600;
+}
+
 /* ==========================================================================
    Barra superior
    ========================================================================== */

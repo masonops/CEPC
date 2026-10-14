@@ -18,14 +18,21 @@ define('SITIO_RAIZ', dirname(__DIR__));
 
 $SITIO = require SITIO_RAIZ . '/config.php';
 
+// Vista previa estática (GitHub Pages): sin panel, con datos de ejemplo.
+// La activa herramientas/construir-estatico.php antes de cargar la página.
+$SITIO['estatico'] = defined('SITIO_ESTATICO');
+$SITIO['demo']     = $SITIO['estatico'];
+
 /* --------------------------------------------------------------------- */
 /*  Buscar el panel                                                       */
 /* --------------------------------------------------------------------- */
 
 $SITIO['panel_raiz'] = null;
-$candidatas = $SITIO['panel_ruta'] !== ''
-    ? [$SITIO['panel_ruta']]
-    : [SITIO_RAIZ . '/panel', dirname(SITIO_RAIZ) . '/cepc-panel'];
+$candidatas = match (true) {
+    $SITIO['estatico']          => [],
+    $SITIO['panel_ruta'] !== '' => [$SITIO['panel_ruta']],
+    default                     => [SITIO_RAIZ . '/panel', dirname(SITIO_RAIZ) . '/cepc-panel'],
+};
 
 foreach ($candidatas as $candidata) {
     if (is_file($candidata . '/config/database.php')) {

@@ -30,31 +30,50 @@ const TIPOS_PUBLICOS = [
     'otro'      => ['etiqueta' => 'Evento',        'peso' => 1],
 ];
 
-/** ¿Hay base de datos del panel con la que trabajar? */
-function datos_disponibles(): bool
+/**
+ * Conexión de donde salen los datos: la base del panel o, en la vista
+ * previa estática (GitHub Pages), la base de ejemplo de demo/ejemplo.php.
+ * null si no hay ninguna.
+ */
+function datos_pdo(): ?PDO
 {
-    static $ok = null;
-    if ($ok === null) {
-        $ok = false;
-        if (sitio('panel_raiz') !== null && function_exists('db')) {
-            try {
-                $ok = db_tabla_existe('eventos');
-            } catch (Throwable) {
-                $ok = false;
+    static $pdo = false;
+    if ($pdo === false) {
+        $pdo = null;
+        try {
+            if (sitio('demo', false)) {
+                require_once SITIO_RAIZ . '/demo/ejemplo.php';
+                $pdo = demo_pdo();
+            } elseif (sitio('panel_raiz') !== null && function_exists('db')) {
+                $pdo = db();
             }
+            // Comprueba que la base esté instalada antes de usarla.
+            $pdo?->query('SELECT 1 FROM eventos LIMIT 1');
+        } catch (Throwable $e) {
+            error_log('[sitio CEPC] ' . $e->getMessage());
+            $pdo = null;
         }
     }
-    return $ok;
+    return $pdo;
+}
+
+/** ¿Hay base de datos con la que trabajar? */
+function datos_disponibles(): bool
+{
+    return datos_pdo() !== null;
 }
 
 /** Ejecuta una consulta protegida: ante cualquier error devuelve []. */
 function datos_filas(string $sql, array $parametros = []): array
 {
-    if (!datos_disponibles()) {
+    $pdo = datos_pdo();
+    if ($pdo === null) {
         return [];
     }
     try {
-        return db_todos($sql, $parametros);
+        $consulta = $pdo->prepare($sql);
+        $consulta->execute($parametros);
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
     } catch (Throwable $e) {
         error_log('[sitio CEPC] ' . $e->getMessage());
         return [];
@@ -169,7 +188,12 @@ function datos_tutorias(int $limite): array
           LIMIT " . max(1, $limite),
         [date('Y-m-d')]
     );
-    $tiposTutoria = function_exists('cat_tipos_tutoria') ? cat_tipos_tutoria() : [];
+    $tiposTutoria = function_exists('cat_tipos_tutoria') ? cat_tipos_tutoria() : [
+        'tutoria'       => 'Tutoría de pares',
+        'ayudantia'     => 'Ayudantía extra',
+        'reforzamiento' => 'Reforzamiento pre-solemne',
+        'taller'        => 'Taller',
+    ];
     foreach ($filas as &$t) {
         $t['tipo_texto'] = $tiposTutoria[$t['tipo']] ?? 'Tutoría';
         $t['libres']     = max(0, (int) $t['cupos'] - (int) $t['inscritos']);
